@@ -1,0 +1,960 @@
+{
+    "Extracted Page": {
+        "Habituel": [
+            [
+                "Raindrop.io",
+                "https://app.raindrop.io/my/-1",
+                "https://f.start.me/app.raindrop.io"
+            ],
+            [
+                "AI agents for beginners",
+                "https://github.com/cocolombo/ai-agents-for-beginners",
+                "https://f.start.me/github.com"
+            ],
+            [
+                "Cloudskillsboost.google",
+                "https://www.cloudskillsboost.google/?show_innovator_form=true",
+                "https://f.start.me/www.cloudskillsboost.google"
+            ],
+            [
+                "Google Gemini (2)",
+                "https://gemini.google.com/gem/61070db28f17/ea4d82a9e8114b1b",
+                "https://f.start.me/gemini.google.com"
+            ],
+            [
+                "ProtonMail",
+                "https://account.proton.me/mail",
+                "https://f.start.me/account.proton.me"
+            ],
+            [
+                "XXX",
+                "https://x.com/notifications",
+                "https://f.start.me/x.com"
+            ],
+            [
+                "Google",
+                "https://www.google.ca/",
+                "https://f.start.me/www.google.ca"
+            ],
+            [
+                "Online Timer",
+                "https://www.timeanddate.com/timer/",
+                "https://f.start.me/www.timeanddate.com"
+            ],
+            [
+                "Synonymes",
+                "https://www.synonymo.fr/",
+                "https://www.google.com/s2/favicons?domain=www.synonymo.fr"
+            ],
+            [
+                "DeepL",
+                "https://www.deepl.com/translator",
+                "https://f.start.me/www.deepl.com"
+            ],
+            [
+                "Mes Signets",
+                "https://cocolombo.github.io/mes_sites/",
+                "https://f.start.me/cocolombo.github.io"
+            ],
+            [
+                "reddit thermopompe",
+                "https://www.reddit.com/r/heatpumps/comments/1iryebj/comment/mdckgsu/?context=3",
+                "https://f.start.me/www.reddit.com"
+            ],
+            [
+                "- YouTube",
+                "https://www.youtube.com/watch?v=pTaSDVz0gok",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "Discord",
+                "https://discord.com/channels/@me",
+                "https://f.start.me/discord.com"
+            ]
+        ],
+        "Météo": [
+            [
+                "Radar météo",
+                "https://www.accuweather.com/fr/ca/montreal/h3a/weather-radar/56186",
+                "https://f.start.me/www.accuweather.com"
+            ],
+            [
+                "HurricaneCenter",
+                "https://www.nhc.noaa.gov/",
+                "https://f.start.me/www.nhc.noaa.gov"
+            ],
+            [
+                "Latest Earthquakes",
+                "https://earthquake.usgs.gov/earthquakes/map/?extent=-85.72811,-402.1875&extent=85.78017,286.17188&sort=largest&listOnlyShown=true",
+                "https://f.start.me/earthquake.usgs.gov"
+            ],
+            [
+                "Paris (France, Île-de-France)",
+                "https://weather.com/weather/today/l/48.85339,2.34864",
+                "https://f.start.me/weather.com"
+            ],
+            [
+                "Climate Reanalyzer",
+                "https://climatereanalyzer.org/clim/t2_daily/?dm_id=world",
+                "https://f.start.me/climatereanalyzer.org"
+            ],
+            [
+                "10-Jours",
+                "https://weather.com/fr-CA/weather/tenday/l/45.53,-73.52",
+                "https://f.start.me/weather.com"
+            ],
+            [
+                "31-Jours",
+                "https://weather.com/fr-CA/weather/monthly/l/45.53,-73.52",
+                "https://f.start.me/weather.com"
+            ],
+            [
+                "MONTRÉAL",
+                "https://weather.com/weather/today/l/45.50884,-73.58781",
+                "https://static.start.me/weather/10d.png"
+            ]
+        ],
+        "Achats": [
+            [
+                "Costco",
+                "https://www.costco.ca/",
+                "https://f.start.me/www.costco.ca"
+            ],
+            [
+                "Amazon.ca",
+                "https://www.amazon.ca/",
+                "https://f.start.me/www.amazon.ca"
+            ],
+            [
+                "Audible",
+                "https://audible.ca/",
+                "https://f.start.me/audible.ca"
+            ],
+            [
+                "Metro.ca",
+                "https://www.metro.ca/",
+                "https://f.start.me/www.metro.ca"
+            ],
+            [
+                "Superc",
+                "https://www.superc.ca/circulaire",
+                "https://f.start.me/www.superc.ca"
+            ],
+            [
+                "IGA",
+                "https://www.iga.net/fr/circulaire/circulaire",
+                "https://f.start.me/www.iga.net"
+            ],
+            [
+                "Wal-Mart",
+                "https://www.walmart.ca/",
+                "https://f.start.me/www.walmart.ca"
+            ],
+            [
+                "Popotesmontreal",
+                "https://popotesmontreal.org/bon-de-commande/",
+                "https://f.start.me/popotesmontreal.org"
+            ],
+            [
+                "Home Depot",
+                "https://homedepot.ca/",
+                "https://f.start.me/homedepot.ca"
+            ],
+            [
+                "renodepot",
+                "https://www.rona.ca/fr",
+                "https://f.start.me/www.rona.ca"
+            ],
+            [
+                "Canadian Tire",
+                "https://www.canadiantire.ca/fr.html",
+                "https://f.start.me/www.canadiantire.ca"
+            ],
+            [
+                "Quincaillerie Lavoie",
+                "https://www.pagesjaunes.ca/bus/Quebec/Montreal/Quincaillerie-Lavoie/3574242.html",
+                "https://f.start.me/www.pagesjaunes.ca"
+            ],
+            [
+                "Prime",
+                "https://www.amazon.ca/gp/primecentral?ref_=ya_d_c_prime",
+                "https://f.start.me/www.amazon.ca"
+            ],
+            [
+                "Sico Proluxe SRD RE Wood Finish 009 Chêne Foncé Dark Oak",
+                "https://www.google.com/search?num=10&newwindow=1&sca_esv=fe6362944b97d7fe&udm=28&fbs=AIIjpHx4nJjfGojPVHhEACUHPiMQ0USrjQeSRDpr8WJmue1kyJIi69nSjs5aaK1oUgwDnpkgZC2aHQ_bKKzGRPKjyluqTPAjXx8nriGuBmviG_hOTJd451uakYUU1EqO7s2J_u6SlSnO7-spKBIRbIJvB937k_7aYed7e6gmTlM81eRUfjtCmqGEHDtLLfN-Cgi5NewyKde2rOujhNe-yC9OkvWxvxHSYw&q=sico+srd+re+wood+finish&ved=1t:220175&ictx=111&biw=1008&bih=459&dpr=1.91#ip=1",
+                "https://f.start.me/www.google.com"
+            ]
+        ],
+        "Musique": [
+            [
+                "- YouTube",
+                "https://youtu.be/mdJU5ogrPMY",
+                "https://f.start.me/youtu.be"
+            ],
+            [
+                "- YouTube",
+                "https://www.youtube.com/watch?v=Ie5GGRkjSXE",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "- YouTube",
+                "https://www.youtube.com/watch?v=f_FSWEg9Wgk",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "Philip Glass",
+                "https://www.youtube.com/watch?v=heu9tD0dzkY",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "- YouTube",
+                "https://www.youtube.com/watch?v=QPgSaUufaVU&t=11s",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "- YouTube",
+                "https://www.youtube.com/watch?v=E__Ty2GcbMM",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "- YouTube (2)",
+                "https://www.youtube.com/watch?v=DJahmKqFSIM",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "Handel",
+                "https://www.youtube.com/watch?v=hxrywXCuIdU",
+                "https://f.start.me/www.youtube.com"
+            ]
+        ],
+        "Maison": [
+            [
+                "moteur fournaise",
+                "https://www.youtube.com/watch?v=HN-05sOh92s",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "Thermostat Lennox",
+                "https://www.youtube.com/watch?v=OQ8YkMBKlk0&t=2s",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "- YouTube",
+                "https://www.youtube.com/watch?v=6FufO9tDq9w",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "- YouTube",
+                "https://www.youtube.com/watch?v=wfWfidb27xM",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "Thermopompe",
+                "https://docs.google.com/spreadsheets/d/1B9b2ZpxAwHFoc5pxLOV9RncVQsdfcVjrzfJ9BZsyzbY/edit?gid=0#gid=0",
+                "https://f.start.me/spreadsheets.google.com"
+            ]
+        ],
+        "Visu": [
+            [
+                "YouTube",
+                "https://www.youtube.com/",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "ICI Rdi en direct",
+                "https://www.coolstreaming.us/channelnew/fr/61965/ICIRdi.html",
+                "https://f.start.me/www.coolstreaming.us"
+            ],
+            [
+                "CNews",
+                "https://www.cnews.fr/les-replays",
+                "https://www.google.com/s2/favicons?domain=www.cnews.fr"
+            ],
+            [
+                "Mordus de politique",
+                "https://ici.radio-canada.ca/rdi/mordus-de-politique/site",
+                "https://f.start.me/ici.radio-canada.ca"
+            ],
+            [
+                "Tou.tv",
+                "https://ici.tou.tv/en-direct?lectureauto=1",
+                "https://f.start.me/ici.tou.tv"
+            ],
+            [
+                "TVA",
+                "https://www.qub.ca/tvaplus/tva/en-direct",
+                "https://f.start.me/www.qub.ca"
+            ],
+            [
+                "QUB",
+                "https://www.qub.ca/",
+                "https://f.start.me/www.qub.ca"
+            ],
+            [
+                "Tv5unis.ca",
+                "https://www.tv5unis.ca/",
+                "https://f.start.me/www.tv5unis.ca"
+            ],
+            [
+                "CNN",
+                "https://www.cnn.com/videos/live",
+                "https://f.start.me/www.cnn.com"
+            ],
+            [
+                "helix.videotron.com",
+                "https://helix.videotron.com/",
+                "https://f.start.me/helix.videotron.com"
+            ]
+        ],
+        "Audio": [
+            [
+                "98.5 FM",
+                "https://www.985fm.ca/",
+                "https://f.start.me/www.985fm.ca"
+            ],
+            [
+                "995.fm",
+                "https://995.fm/",
+                "https://f.start.me/995.fm"
+            ],
+            [
+                "CBC Music",
+                "https://www.cbc.ca/listen/live-radio",
+                "https://f.start.me/www.cbc.ca"
+            ],
+            [
+                "Direct.radiovm.com",
+                "https://direct.radiovm.com/",
+                "https://f.start.me/direct.radiovm.com"
+            ],
+            [
+                "Richard Martineau",
+                "https://www.qub.ca/radio/balado/richard-martineau?audio=1099160126",
+                "https://f.start.me/www.qub.ca"
+            ]
+        ],
+        "Journaux": [
+            [
+                "Le Devoir",
+                "https://www.ledevoir.com/",
+                "https://f.start.me/www.ledevoir.com"
+            ],
+            [
+                "La Presse",
+                "https://www.lapresse.ca/",
+                "https://f.start.me/www.lapresse.ca"
+            ],
+            [
+                "The New York Times",
+                "https://www.nytimes.com/",
+                "https://f.start.me/www.nytimes.com"
+            ],
+            [
+                "The Washington Post",
+                "https://www.washingtonpost.com/",
+                "https://f.start.me/www.washingtonpost.com"
+            ],
+            [
+                "The Globe and Mail",
+                "https://www.theglobeandmail.com/",
+                "https://f.start.me/www.theglobeandmail.com"
+            ],
+            [
+                "Le Journal de Montréal",
+                "https://www.journaldemontreal.com/",
+                "https://f.start.me/www.journaldemontreal.com"
+            ]
+        ],
+        "Langue": [
+            [
+                "Champ lexical",
+                "https://www.rimessolides.com/motscles.aspx",
+                "https://f.start.me/www.rimessolides.com"
+            ],
+            [
+                "DeepL",
+                "https://www.deepl.com/translator",
+                "https://f.start.me/www.deepl.com"
+            ],
+            [
+                "Synonymes",
+                "https://www.synonymo.fr/",
+                "https://www.google.com/s2/favicons?domain=www.synonymo.fr"
+            ],
+            [
+                "Scribens reformulation",
+                "https://www.scribens.fr/?key=Rephrasep",
+                "https://f.start.me/www.scribens.fr"
+            ]
+        ],
+        "Divers": [
+            [
+                "HQ pannes",
+                "https://infopannes.solutions.hydroquebec.com/info-pannes/pannes/pannes-en-cours?langue=fr",
+                "https://f.start.me/infopannes.solutions.hydroquebec.com"
+            ],
+            [
+                "Lotto 6/49",
+                "https://loteries.espacejeux.com/fr/loteries/lotto-6-49",
+                "https://f.start.me/loteries.espacejeux.com"
+            ],
+            [
+                "LotoMax",
+                "https://loteries.espacejeux.com/fr/loteries/lotto-max",
+                "https://f.start.me/loteries.espacejeux.com"
+            ],
+            [
+                "Communauto",
+                "https://quebec.client.reservauto.net/",
+                "https://f.start.me/quebec.client.reservauto.net"
+            ],
+            [
+                "Communauto grille tarifaire",
+                "https://communauto.com/wp-content/uploads/pdf/qc/grille-tarifaire-qc.pdf",
+                "https://f.start.me/communauto.com"
+            ],
+            [
+                "TinEye",
+                "https://tineye.com/",
+                "https://f.start.me/tineye.com"
+            ],
+            [
+                "Bibliomontreal.com",
+                "https://bibliomontreal.com/",
+                "https://f.start.me/bibliomontreal.com"
+            ],
+            [
+                "www.quebecmunicipal.qc.ca",
+                "https://www.quebecmunicipal.qc.ca/",
+                "https://f.start.me/www.quebecmunicipal.qc.ca"
+            ],
+            [
+                "Board Editor",
+                "https://www.365chess.com/board_editor.php",
+                "https://f.start.me/www.365chess.com"
+            ],
+            [
+                "Google Drawings",
+                "https://docs.google.com/drawings",
+                "https://f.start.me/drawings.google.com"
+            ],
+            [
+                "Helix admin 10.0.0.1",
+                "https://10.0.0.1/",
+                "https://www.google.com/s2/favicons?domain=10.0.0.1"
+            ],
+            [
+                "Données ouvertes",
+                "https://donnees.montreal.ca/",
+                "https://f.start.me/donnees.montreal.ca"
+            ],
+            [
+                "Loading... (2)",
+                "https://connexion.solutions.hydroquebec.com/32bf9b91-0a36-4385-b231-d9a8fa3b05ab/b2c_1a_prd_signup_signin/oauth2/v2.0/authorize?response_type=code&client_id=09b0ae72-6db8-4ecc-a1be-041b67afc1cd&state=dHpWek42YW5wSUpGelRVYi00MjNkSWtQWGtsUUF4anZEZzkyUEM0WFdvVzBf%3B%257B%2522state%2522%253A%2522%257B%255C%2522url%255C%2522%253A%255C%2522%252Fclient%252Fgroup%252Frelation-affaires%255C%2522%257D%2522%252C%2522stateStore%2522%253A%2522url%2522%257D&redirect_uri=https%3A%2F%2Fsession.hydroquebec.com%2Foauth2%2Fcallback&scope=openid%20https%3A%2F%2Fconnexionhq.onmicrosoft.com%2Fhq-clientele%2FEspace.Client&code_challenge=e5LH2PqsdakB0xGnmMIVM3qXpcU2knSkNT7riUlEiE4&code_challenge_method=S256&nonce=dHpWek42YW5wSUpGelRVYi00MjNkSWtQWGtsUUF4anZEZzkyUEM0WFdvVzBf&ui_locales=fr&mobile=false",
+                "https://f.start.me/connexion.solutions.hydroquebec.com"
+            ]
+        ],
+        "Climat": [
+            [
+                "CO2 lags temperature",
+                "https://skepticalscience.com/co2-lags-temperature-intermediate.htm",
+                "https://f.start.me/skepticalscience.com"
+            ],
+            [
+                "How China plans to meet its 2030 renewables target by the end of this month",
+                "https://www.abc.net.au/news/science/2024-07-16/chinas-renewable-energy-boom-breaks-records/104086640",
+                "https://f.start.me/www.abc.net.au"
+            ],
+            [
+                "Climate-change-myth-debunker",
+                "https://chatgpt.com/g/g-MuFNfgDEB-climate-change-myth-debunker/c/67927e08-0c98-8011-b0ee-da69f99c80d9",
+                "https://f.start.me/chatgpt.com"
+            ]
+        ],
+        "Docu importante": [
+            [
+                "DocuIA",
+                "https://github.com/cocolombo/DocuIA",
+                "https://f.start.me/github.com"
+            ],
+            [
+                "Explications de LoRA (10/10)",
+                "https://g.co/gemini/share/49f1972951b2",
+                "https://f.start.me/g.co"
+            ],
+            [
+                "Réinstaller Jetbrains Toolbox",
+                "https://github.com/copilot/share/0a695128-4ba4-8894-9000-044960e200db",
+                "https://f.start.me/github.com"
+            ],
+            [
+                "NotebookLM",
+                "https://notebooklm.google.com/",
+                "https://f.start.me/notebooklm.google.com"
+            ],
+            [
+                "Gemini",
+                "https://gemini.google.com/app/de0d8c74bdb41684",
+                "https://f.start.me/gemini.google.com"
+            ],
+            [
+                "Google Photos",
+                "https://photos.google.com/",
+                "https://www.google.com/s2/favicons?domain=photos.google.com"
+            ],
+            [
+                "GoogleDrive",
+                "https://drive.google.com/drive/my-drive",
+                "https://f.start.me/drive.google.com"
+            ],
+            [
+                "Google AI Studio",
+                "https://aistudio.google.com/prompts/new_chat",
+                "https://f.start.me/aistudio.google.com"
+            ],
+            [
+                "Colab.google",
+                "https://colab.google/",
+                "https://f.start.me/colab.google"
+            ],
+            [
+                "Google Mes Notebooks",
+                "https://colab.research.google.com/",
+                "https://f.start.me/colab.research.google.com"
+            ],
+            [
+                "Gmail",
+                "https://mail.google.com/",
+                "https://f.start.me/mail.google.com"
+            ],
+            [
+                "Résilier abonnement à Google One",
+                "https://one.google.com/settings?expand=upgrade&hl=fr&g1_landing_page=1&utm_source=google-account&utm_medium=web",
+                "https://f.start.me/one.google.com"
+            ],
+            [
+                "Google Cloud Platform",
+                "https://console.cloud.google.com/welcome?hl=fr&inv=1&invt=Ab3irg&project=mes-sites-466617&supportedpurview=project,organizationId,folder",
+                "https://f.start.me/console.cloud.google.com"
+            ],
+            [
+                "Google allauth",
+                "https://console.cloud.google.com/auth/clients?inv=1&invt=Ab1SQA&project=redico-ai-464301&supportedpurview=project",
+                "https://f.start.me/console.cloud.google.com"
+            ],
+            [
+                "Google Chat",
+                "https://mail.google.com/chat/u/0/#chat/home",
+                "https://f.start.me/mail.google.com"
+            ],
+            [
+                "Modèles Gemini",
+                "https://docs.google.com/document/d/1NBI24f7LDbZ_fjqfHbHcTv6zcoRNn3NfrzvunHmL6rg/edit?addon_store&tab=t.0",
+                "https://f.start.me/docs.google.com"
+            ]
+        ],
+        "Cours IA": [
+            [
+                "Transformers, what can they do?",
+                "https://huggingface.co/learn/llm-course/chapter1/3",
+                "https://f.start.me/huggingface.co"
+            ],
+            [
+                "Sagemaker.aws",
+                "https://studiolab.sagemaker.aws/users/nimzo",
+                "https://f.start.me/studiolab.sagemaker.aws"
+            ],
+            [
+                "5-Day AI Agents Intensive Course with Google",
+                "https://www.kaggle.com/learn-guide/5-day-agents",
+                "https://f.start.me/www.kaggle.com"
+            ],
+            [
+                "http://tomlr.free.fr/Math%E9matiques/Math%20Complete/calculus/THEORY%20AND%20PROBLEMS%20OF%20DIFFERENTIAL%20AND%20INTEGRAL%20CALCULUS%20Third%20Edition%20-%20AYRES%20&%20MENDELSON.pdf",
+                "http://tomlr.free.fr/Math%E9matiques/Math%20Complete/calculus/THEORY%20AND%20PROBLEMS%20OF%20DIFFERENTIAL%20AND%20INTEGRAL%20CALCULUS%20Third%20Edition%20-%20AYRES%20&%20MENDELSON.pdf",
+                "https://f.start.me/tomlr.free.fr"
+            ]
+        ],
+        "IA": [
+            [
+                "Gemini",
+                "https://gemini.google.com/app/de0d8c74bdb41684",
+                "https://f.start.me/gemini.google.com"
+            ],
+            [
+                "Copilot",
+                "https://github.com/copilot",
+                "https://f.start.me/github.com"
+            ],
+            [
+                "Grok.com",
+                "https://grok.com/",
+                "https://f.start.me/grok.com"
+            ],
+            [
+                "Perplexity AI",
+                "https://www.perplexity.ai/?utm_source=blog&utm_medium=blog&utm_campaign=blog&utm_content=try-pplx",
+                "https://f.start.me/www.perplexity.ai"
+            ],
+            [
+                "Claude",
+                "https://claude.ai/new",
+                "https://f.start.me/claude.ai"
+            ],
+            [
+                "DeepSeek",
+                "https://chat.deepseek.com/a/chat",
+                "https://f.start.me/chat.deepseek.com"
+            ],
+            [
+                "Mistral AI",
+                "https://mistral.ai/",
+                "https://f.start.me/mistral.ai"
+            ],
+            [
+                "ChatGPT",
+                "https://chatgpt.com/",
+                "https://f.start.me/chatgpt.com"
+            ],
+            [
+                "Chat.qwen.ai",
+                "https://chat.qwen.ai/",
+                "https://f.start.me/chat.qwen.ai"
+            ],
+            [
+                "Sign in",
+                "https://aistudio.google.com/prompts/new_chat",
+                "https://f.start.me/aistudio.google.com"
+            ],
+            [
+                "z.ai",
+                "https://chat.z.ai/",
+                "https://f.start.me/chat.z.ai"
+            ]
+        ],
+        "Travail": [
+            [
+                "Desmos",
+                "https://www.desmos.com/calculator?lang=fr",
+                "https://f.start.me/www.desmos.com"
+            ],
+            [
+                "administration",
+                "https://admin.alwaysdata.com/site/",
+                "https://f.start.me/admin.alwaysdata.com"
+            ],
+            [
+                "Github Repo",
+                "https://github.com/cocolombo?tab=repositories",
+                "https://f.start.me/github.com"
+            ],
+            [
+                "GitHub Gist",
+                "https://gist.github.com/",
+                "https://f.start.me/gist.github.com"
+            ],
+            [
+                "Anthropic Console",
+                "https://console.anthropic.com/settings/billing",
+                "https://f.start.me/console.anthropic.com"
+            ],
+            [
+                "GoogleNotebookLM",
+                "https://notebooklm.google.com/?original_referer=https:%2F%2Fwww.google.ca%23&pli=1",
+                "https://f.start.me/notebooklm.google.com"
+            ],
+            [
+                "Google AI Studio",
+                "https://aistudio.google.com/prompts/new_chat",
+                "https://f.start.me/aistudio.google.com"
+            ],
+            [
+                "Le Redico",
+                "https://redico.alwaysdata.net/redicos/",
+                "https://f.start.me/redico.alwaysdata.net"
+            ],
+            [
+                "https://console.x.ai/team/8dc3e83d-9f14-41a1-a547-f2907f636f68/billing/credits",
+                "https://console.x.ai/team/8dc3e83d-9f14-41a1-a547-f2907f636f68/billing/credits",
+                "https://f.start.me/console.x.ai"
+            ],
+            [
+                "Authenticator.cursor.sh",
+                "https://authenticator.cursor.sh/",
+                "https://f.start.me/authenticator.cursor.sh"
+            ],
+            [
+                "fill out this form.",
+                "https://help.twitter.com/forms/privacy",
+                "https://f.start.me/help.twitter.com"
+            ]
+        ],
+        "Travail2": [
+            [
+                "Streamlit",
+                "https://storm.genie.stanford.edu/",
+                "https://f.start.me/storm.genie.stanford.edu"
+            ],
+            [
+                "HuggingChat",
+                "https://huggingface.co/chat/",
+                "https://f.start.me/huggingface.co"
+            ],
+            [
+                "Qwen",
+                "https://chat.qwenlm.ai/",
+                "https://f.start.me/chat.qwenlm.ai"
+            ],
+            [
+                "Qwant",
+                "https://www.qwant.com/?l=fr",
+                "https://f.start.me/www.qwant.com"
+            ],
+            [
+                "Bluesky Social",
+                "https://bsky.app/",
+                "https://f.start.me/bsky.app"
+            ],
+            [
+                "https://platform.openai.com/playground/chat?mode=chat&models=gpt-4o",
+                "https://platform.openai.com/playground/chat?mode=chat&models=gpt-4o",
+                "https://f.start.me/platform.openai.com"
+            ],
+            [
+                "https://www.cursor.com/en",
+                "https://www.cursor.com/en",
+                "https://f.start.me/www.cursor.com"
+            ],
+            [
+                "OpenHands README",
+                "https://github.com/All-Hands-AI/OpenHands/blob/main/README.md",
+                "https://f.start.me/github.com"
+            ]
+        ],
+        "Santé": [
+            [
+                "Carnet santé",
+                "https://carnetsante.gouv.qc.ca/",
+                "https://f.start.me/carnetsante.gouv.qc.ca"
+            ],
+            [
+                "portal",
+                "https://portal3.clicsante.ca/?serviceId=204&postalCode=H4H+2G6",
+                "https://f.start.me/portal3.clicsante.ca"
+            ],
+            [
+                "Clic Santé",
+                "https://clients3.clicsante.ca/8000/take-appt?portalPlace=102&portalPostalCode=H4H%202G6&lang=fr&portalServicesUnified=11,353&portalEst=257",
+                "https://f.start.me/clients3.clicsante.ca"
+            ],
+            [
+                "Prendre rdv MD",
+                "https://www.quebec.ca/sante/trouver-une-ressource/medecin-de-famille-prendre-rendez-vous-en-ligne",
+                "https://f.start.me/www.quebec.ca"
+            ]
+        ],
+        "Sciences": [
+            [
+                "Sciences.com",
+                "http://sciences.com/",
+                "https://f.start.me/sciences.com"
+            ],
+            [
+                "The Busy Beaver Challenge",
+                "https://bbchallenge.org/story#definition-of-bb",
+                "https://f.start.me/bbchallenge.org"
+            ]
+        ],
+        "Courriel/Drives": [
+            [
+                "Gmail",
+                "https://mail.google.com/",
+                "https://f.start.me/mail.google.com"
+            ],
+            [
+                "MS_Onedrive",
+                "https://photos.onedrive.com/",
+                "https://f.start.me/photos.onedrive.com"
+            ],
+            [
+                "ProtonMail",
+                "https://account.proton.me/mail",
+                "https://f.start.me/account.proton.me"
+            ],
+            [
+                "AmazonDrive",
+                "https://www.amazon.ca/photos/folders",
+                "https://f.start.me/www.amazon.ca"
+            ],
+            [
+                "Proton Drive",
+                "https://drive.proton.me/u/0/ExGzRTEvl9bDTgkiNfDoXadMwnTI5ktqAQwt4s8MEIEMy3KjNW8PpuOHenv4ShVF71_IcVkYge8F_PifY3BCtA==/folder/oUkAgveJIjjvM4CSNiJMsokGv_N5Cfn8mmzSMjP2Kxbpi6qqjtB9BkcUONcCLgBGBoqxvwyEjL8vMhjm6mVSGA==",
+                "https://f.start.me/drive.proton.me"
+            ],
+            [
+                "Yahoo Mail",
+                "https://mail.yahoo.com/",
+                "https://f.start.me/mail.yahoo.com"
+            ],
+            [
+                "Proton Pass",
+                "https://pass.proton.me/u/0/share/TbzT3wAlROHRgEbheNwtWRnlaxyOvHJJO2UuvbsqSh8bxvWCDleBa4MB4hHnup3RawojYzifqsJXq8BV1uweDg==/item/FLYNi4s5mTyXQOGeRYydHh27EPCFsOcKpsFbh9pw3L5DJow1XxTDyNB8NCEUZ5a18RleQmEjcylJgqG93hrmcA==?filters=eyJzZWFyY2giOiIiLCJzb3J0IjoicmVjZW50IiwidHlwZSI6IioiLCJzZWxlY3RlZFNoYXJlSWQiOm51bGx9",
+                "https://f.start.me/pass.proton.me"
+            ],
+            [
+                "wealthsimple",
+                "https://my.wealthsimple.com/app/home",
+                "https://f.start.me/my.wealthsimple.com"
+            ],
+            [
+                "Impôt2024",
+                "https://docs.google.com/spreadsheets/d/1YEeIupGXtvn5twRLnj5SvFKQOcE9t232Id7HPFATIts/edit#gid=0",
+                "https://f.start.me/spreadsheets.google.com"
+            ],
+            [
+                "Alim",
+                "https://docs.google.com/spreadsheets/d/1s-5zqMcZdOa3IemOHdgJuCMqlAqikulBg-SyLdGurq8/edit?ouid=110135700900220212475&usp=sheets_home&ths=true",
+                "https://f.start.me/spreadsheets.google.com"
+            ]
+        ],
+        "Abonnements": [
+            [
+                "Github",
+                "https://github.com/cocolombo/docu",
+                "https://f.start.me/github.com"
+            ],
+            [
+                "OpenAI",
+                "https://openai.com/",
+                "https://f.start.me/openai.com"
+            ],
+            [
+                "Audible.ca",
+                "https://www.audible.ca/",
+                "https://f.start.me/www.audible.ca"
+            ],
+            [
+                "BiblioMtl",
+                "https://bibliomontreal.com/",
+                "https://f.start.me/bibliomontreal.com"
+            ],
+            [
+                "AlwaysData",
+                "https://admin.alwaysdata.com/login/?next=/",
+                "https://f.start.me/admin.alwaysdata.com"
+            ],
+            [
+                "Espace client",
+                "https://www.videotron.com/client/residentiel/Espace-client",
+                "https://f.start.me/www.videotron.com"
+            ],
+            [
+                "Github abonnement",
+                "https://github.com/settings/billing/summary",
+                "https://f.start.me/github.com"
+            ]
+        ],
+        "Forums/Blogues": [
+            [
+                "Forum Sceptique",
+                "https://forum-sceptique.com/search.php?search_id=active_topics&sid=ce2292247112d05dc69dedb0534d8fee",
+                "https://f.start.me/forum-sceptique.com"
+            ],
+            [
+                "Quanta Magazine",
+                "https://www.quantamagazine.org/",
+                "https://f.start.me/www.quantamagazine.org"
+            ],
+            [
+                "International Skeptics",
+                "https://www.internationalskeptics.com/forums/",
+                "https://f.start.me/www.internationalskeptics.com"
+            ],
+            [
+                "Physics Forums",
+                "https://www.physicsforums.com/",
+                "https://f.start.me/www.physicsforums.com"
+            ],
+            [
+                "Reddit/r/Python",
+                "https://www.reddit.com/r/Python/",
+                "https://f.start.me/www.reddit.com"
+            ],
+            [
+                "reddit/r/django/",
+                "https://www.reddit.com/r/django/",
+                "https://f.start.me/www.reddit.com"
+            ],
+            [
+                "reddit/r/QuebecLibre",
+                "https://www.reddit.com/r/QuebecLibre",
+                "https://f.start.me/www.reddit.com"
+            ],
+            [
+                "/r/theydidthemath/",
+                "https://www.reddit.com/r/theydidthemath/",
+                "https://f.start.me/www.reddit.com"
+            ],
+            [
+                "Axiome",
+                "https://www.youtube.com/channel/UCNHFiyWgsnaSOsMtSoV_Q1A",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "MonsieurPhi",
+                "https://www.youtube.com/watch?v=dOF9vc5tLJ4",
+                "https://f.start.me/www.youtube.com"
+            ],
+            [
+                "Blog.pubpeer.com",
+                "https://blog.pubpeer.com/",
+                "https://f.start.me/blog.pubpeer.com"
+            ],
+            [
+                "Mostly Python",
+                "https://www.mostlypython.com/",
+                "https://f.start.me/www.mostlypython.com"
+            ],
+            [
+                "Le Redico",
+                "https://redico.alwaysdata.net/redicos/",
+                "https://f.start.me/redico.alwaysdata.net"
+            ],
+            [
+                "In Our Time",
+                "https://www.bbc.co.uk/programmes/p00545hk",
+                "https://f.start.me/www.bbc.co.uk"
+            ]
+        ],
+        "Python": [
+            [
+                "Real Python-Achats",
+                "https://realpython.com/account/purchases/",
+                "https://f.start.me/realpython.com"
+            ]
+        ],
+        "Cours des actions": [
+            [
+                "BTC-USD - Bitcoin USD (CCC)",
+                "https://finance.yahoo.com/quote/BTC-USD/",
+                "https://www.google.com/s2/favicons?domain=finance.yahoo.com"
+            ],
+            [
+                "^DJI - Dow Jones Industrial Average (DJI)",
+                "https://finance.yahoo.com/quote/%5EDJI/",
+                "https://www.google.com/s2/favicons?domain=finance.yahoo.com"
+            ],
+            [
+                "^GSPC - S&P 500 (SNP)",
+                "https://finance.yahoo.com/quote/%5EGSPC/",
+                "https://www.google.com/s2/favicons?domain=finance.yahoo.com"
+            ],
+            [
+                "^IXIC - NASDAQ Composite (NIM)",
+                "https://finance.yahoo.com/quote/%5EIXIC/",
+                "https://www.google.com/s2/favicons?domain=finance.yahoo.com"
+            ]
+        ]
+    }
+}

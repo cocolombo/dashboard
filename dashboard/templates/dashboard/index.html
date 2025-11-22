@@ -78,16 +78,24 @@
                 {% for widget in active_page.widgets.all %}
                 <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 flex flex-col group/widget" data-id="{{ widget.id }}">
 
-                    <div class="widget-handle flex justify-between items-center mb-3 border-b border-gray-600 pb-2 cursor-move select-none"
-                         oncontextmenu="showWidgetMenu(event, '{{ widget.id }}')">
+                <div class="widget-handle flex justify-between items-center mb-3 border-b border-gray-600 pb-2 cursor-move select-none">
 
-                        <h3 class="font-bold text-orange-400 text-lg pointer-events-none">{{ widget.title }}</h3>
+                    <h3 class="font-bold text-orange-400 text-lg pointer-events-none flex-1">{{ widget.title }}</h3>
+
+                    <div class="flex items-center">
+                        <button onclick="showWidgetMenu(event, '{{ widget.id }}')"
+                                class="text-gray-500 hover:text-blue-400 font-bold text-lg px-2 transition-colors cursor-pointer"
+                                title="Déplacer vers une autre page">
+                            ➜
+                        </button>
 
                         <button onclick="toggleForm('form-{{ widget.id }}')"
-                                class="text-gray-500 hover:text-green-400 font-bold text-2xl leading-none px-2 transition-colors cursor-pointer">
+                                class="text-gray-500 hover:text-green-400 font-bold text-2xl leading-none px-2 transition-colors cursor-pointer"
+                                title="Ajouter un lien">
                             +
                         </button>
                     </div>
+                </div>
 
 
                     <form id="form-{{ widget.id }}" action="{% url 'add_link' widget.id %}" method="POST" class="hidden mb-3 bg-gray-900 p-3 rounded border border-gray-600">
@@ -128,6 +136,7 @@
         <div class="text-center text-gray-500 mt-10">Aucune page configurée. Lancez la commande seed_db !</div>
         {% endif %}
     </div>
+
 
     <div id="context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-xl w-56 py-1 text-sm">
         <div class="px-4 py-2 font-bold border-b border-gray-700 text-gray-400 text-xs uppercase">Actions</div>
@@ -241,24 +250,24 @@
     const widgetMenu = document.getElementById('widget-context-menu');
 
     function showWidgetMenu(e, widgetId) {
-        e.preventDefault(); // Empêche le menu du navigateur
-        e.stopPropagation(); // Empêche de déclencher d'autres clics
+            e.preventDefault(); // Empêche le comportement par défaut (utile si c'était un lien)
+            e.stopPropagation(); // Empêche de déclencher le drag & drop en cliquant
 
-        // 1. Positionner le menu à la souris
-        widgetMenu.style.left = e.pageX + 'px';
-        widgetMenu.style.top = e.pageY + 'px';
-        widgetMenu.classList.remove('hidden');
+            // On positionne le menu exactement sous le curseur de la souris
+            // C'est la méthode la plus fiable
+            widgetMenu.style.left = e.clientX + 'px';
+            widgetMenu.style.top = e.clientY + 'px';
 
-        // 2. Mettre à jour l'URL d'action pour chaque bouton du menu
-        // On remplace le '0' par le vrai ID du widget cliqué
-        document.querySelectorAll('.widget-move-form').forEach(form => {
-            // L'action ressemble à : /widget/move/0/ -> On remplace le dernier nombre
-            let baseAction = form.getAttribute('action');
-            // Astuce regex : remplace le dernier segment numérique par l'ID
-            let newAction = baseAction.replace(/\/\d+\/$/, '/' + widgetId + '/');
-            form.setAttribute('action', newAction);
-        });
-    }
+            widgetMenu.classList.remove('hidden');
+
+            // Mise à jour des liens du menu (inchangé)
+            document.querySelectorAll('.widget-move-form').forEach(form => {
+                let baseAction = form.getAttribute('action');
+                // Remplace l'ancien ID (dernier chiffre) par le nouveau
+                let newAction = baseAction.replace(/\/\d+\/$/, '/' + widgetId + '/');
+                form.setAttribute('action', newAction);
+            });
+        }
 
     // Fermer le menu si on clique n'importe où ailleurs
     document.addEventListener('click', function(e) {

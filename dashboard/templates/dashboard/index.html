@@ -51,28 +51,37 @@
 </nav>
 
 
-<div class="flex justify-center py-8">
-    <form action="https://www.google.com/search" method="GET" target="_blank"
-          class="w-full max-w-2xl relative group">
+    <div class="flex justify-center items-center py-8 px-4 gap-4">
 
-        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-        </div>
+        <form action="https://www.google.com/search" method="GET" target="_blank"
+              class="w-full max-w-2xl relative group">
 
-        <input type="text" name="q" placeholder="Rechercher sur le web..." autofocus
-               class="w-full bg-gray-800 text-white text-lg border border-gray-700 rounded-full py-3 pl-12 pr-4 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-500">
+            <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
 
-        <div class="absolute inset-0 rounded-full bg-blue-500 opacity-0 group-focus-within:opacity-20 blur-md transition-opacity -z-10"></div>
-    </form>
-</div>
+            <input type="text" name="q" placeholder="Rechercher sur le web..." autofocus
+                   class="w-full bg-gray-800 text-white text-lg border border-gray-700 rounded-full py-3 pl-12 pr-4 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-500">
 
+            <div class="absolute inset-0 rounded-full bg-blue-500 opacity-0 group-focus-within:opacity-20 blur-md transition-opacity -z-10"></div>
+        </form>
 
+        {% if active_page %}
+        <button onclick="toggleModal('modal-add-widget')"
+                class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 rounded-full shadow-lg flex items-center font-bold transition-colors whitespace-nowrap"
+                title="Ajouter une catégorie à cette page">
+            <span class="text-xl mr-2 leading-none">+</span> Catégorie
+        </button>
+        {% endif %}
 
+    </div>
 
     <div class="p-6">
-        {% if active_page %}
+            {% if active_page %}
+
+
             <div id="widget-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
                 {% for widget in active_page.widgets.all %}
@@ -82,12 +91,20 @@
 
                     <h3 class="font-bold text-orange-400 text-lg pointer-events-none flex-1">{{ widget.title }}</h3>
 
-                    <div class="flex items-center">
+                   <div class="flex items-center space-x-1">
+
                         <button onclick="showWidgetMenu(event, '{{ widget.id }}')"
                                 class="text-gray-500 hover:text-blue-400 font-bold text-lg px-2 transition-colors cursor-pointer"
                                 title="Déplacer vers une autre page">
                             ➜
                         </button>
+
+                        <a href="{% url 'delete_widget' widget.id %}"
+                           onclick="return confirm('Attention : Voulez-vous vraiment supprimer la catégorie « {{ widget.title }} » et tous ses liens ?')"
+                           class="text-gray-500 hover:text-red-500 font-bold text-lg px-2 transition-colors cursor-pointer"
+                           title="Supprimer cette catégorie">
+                            🗑
+                        </a>
 
                         <button onclick="toggleForm('form-{{ widget.id }}')"
                                 class="text-gray-500 hover:text-green-400 font-bold text-2xl leading-none px-2 transition-colors cursor-pointer"
@@ -241,6 +258,36 @@
         {% endif %}
     {% endfor %}
 </div>
+
+{% if active_page %}
+<div id="modal-add-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+        <h2 class="text-xl font-bold text-white mb-4">Nouvelle Catégorie</h2>
+
+        <form action="{% url 'add_widget' active_page.id %}" method="POST">
+            {% csrf_token %}
+            <label class="block text-gray-400 text-sm mb-2">Titre de la catégorie</label>
+            <input type="text" name="title" required autofocus
+                   class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
+                   placeholder="Ex: Sports, Recettes...">
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="toggleModal('modal-add-widget')"
+                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">
+                    Créer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+
+
 
 
 <script>

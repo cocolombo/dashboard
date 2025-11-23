@@ -275,3 +275,38 @@ def move_widget_to_page(request, widget_id):
 
     # On recharge la page actuelle pour voir le widget disparaître
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+# dashboard/views.py
+
+def delete_widget(request, widget_id):
+    widget = get_object_or_404(Widget, id=widget_id)
+    widget.delete()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+# dashboard/views.py
+
+@require_POST
+def add_widget(request, page_id):
+    page = get_object_or_404(Page, id=page_id)
+    title = request.POST.get('title')
+
+    if title:
+        # On crée le widget à la fin de la liste
+        Widget.objects.create(title=title, page=page, order=999)
+
+    # On recharge la page courante
+    return redirect('index', slug=page.slug)
+
+
+
+
+
+
+
+
+
+
+
+

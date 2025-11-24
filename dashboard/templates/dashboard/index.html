@@ -78,42 +78,68 @@
 
     </div>
 
-    <div class="p-6">
-            {% if active_page %}
 
+<div class="p-6">
+        {% if active_page %}
 
-            <div id="widget-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% if active_page.slug == 'infos' %}
 
-                {% for widget in active_page.widgets.all %}
-                <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 flex flex-col group/widget" data-id="{{ widget.id }}">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
-                <div class="widget-handle flex justify-between items-center mb-3 border-b border-gray-600 pb-2 cursor-move select-none">
-
-                    <h3 class="font-bold text-orange-400 text-lg pointer-events-none flex-1">{{ widget.title }}</h3>
-
-                   <div class="flex items-center space-x-1">
-
-                        <button onclick="showWidgetMenu(event, '{{ widget.id }}')"
-                                class="text-gray-500 hover:text-blue-400 font-bold text-lg px-2 transition-colors cursor-pointer"
-                                title="Déplacer vers une autre page">
-                            ➜
-                        </button>
-
-                        <a href="{% url 'delete_widget' widget.id %}"
-                           onclick="return confirm('Attention : Voulez-vous vraiment supprimer la catégorie « {{ widget.title }} » et tous ses liens ?')"
-                           class="text-gray-500 hover:text-red-500 font-bold text-lg px-2 transition-colors cursor-pointer"
-                           title="Supprimer cette catégorie">
-                            🗑
+                    <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex items-center justify-center overflow-hidden relative group">
+                        <h3 class="font-bold text-orange-400 text-lg absolute top-4 left-4 z-10 bg-gray-800/80 px-2 rounded backdrop-blur-sm">Météo</h3>
+                        <a href="https://wttr.in/Montreal?lang=fr" target="_blank">
+                            <img src="https://wttr.in/Montreal.png?0&Q&lang=fr"
+                                 alt="Météo"
+                                 class="transform scale-150 transition-transform duration-500 group-hover:scale-[1.6]">
                         </a>
+                    </div>
 
-                        <button onclick="toggleForm('form-{{ widget.id }}')"
-                                class="text-gray-500 hover:text-green-400 font-bold text-2xl leading-none px-2 transition-colors cursor-pointer"
-                                title="Ajouter un lien">
-                            +
-                        </button>
+                    <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex flex-col justify-center items-center">
+                        <h3 class="font-bold text-orange-400 w-full text-left mb-2">Heure Locale</h3>
+                        <div id="clock-display" class="text-6xl font-mono text-blue-400 font-bold tracking-wider">--:--:--</div>
+                        <div id="date-display" class="text-gray-400 text-xl mt-2 capitalize">Chargement...</div>
+                    </div>
+
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 mb-8">
+                    <h3 class="font-bold text-orange-400 mb-4 text-lg">Marchés Financiers</h3>
+                    <div class="tradingview-widget-container">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                      {
+                      "symbols": [
+                        { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" },
+                        { "proName": "FOREXCOM:NSXUSD", "title": "Nasdaq 100" },
+                        { "proName": "FX_IDC:EURUSD", "title": "EUR/USD" },
+                        { "proName": "BITSTAMP:BTCUSD", "title": "Bitcoin" },
+                        { "proName": "BITSTAMP:ETHUSD", "title": "Ethereum" },
+                        { "proName": "TSX:TSX", "title": "TSX" }
+                      ],
+                      "showSymbolLogo": true,
+                      "colorTheme": "dark",
+                      "isTransparent": true,
+                      "displayMode": "adaptive",
+                      "locale": "fr"
+                    }
+                      </script>
                     </div>
                 </div>
 
+            {% endif %}
+            <div id="widget-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for widget in active_page.widgets.all %}
+                <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 flex flex-col group/widget" data-id="{{ widget.id }}">
+
+                    <div class="widget-handle flex justify-between items-center mb-3 border-b border-gray-600 pb-2 cursor-move select-none">
+                        <h3 class="font-bold text-orange-400 text-lg pointer-events-none flex-1">{{ widget.title }}</h3>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="showWidgetMenu(event, '{{ widget.id }}')" class="text-gray-500 hover:text-blue-400 font-bold text-lg px-2 transition-colors cursor-pointer" title="Déplacer">➜</button>
+                            <button onclick="confirmDeleteWidget('{{ widget.id }}')" class="text-gray-500 hover:text-red-500 font-bold text-lg px-2 transition-colors cursor-pointer" title="Supprimer">🗑</button>
+                            <button onclick="toggleForm('form-{{ widget.id }}')" class="text-gray-500 hover:text-green-400 font-bold text-2xl leading-none px-2 transition-colors cursor-pointer" title="Ajouter">+</button>
+                        </div>
+                    </div>
 
                     <form id="form-{{ widget.id }}" action="{% url 'add_link' widget.id %}" method="POST" class="hidden mb-3 bg-gray-900 p-3 rounded border border-gray-600">
                         {% csrf_token %}
@@ -122,25 +148,15 @@
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-1 rounded text-sm">Ajouter</button>
                     </form>
 
-                    <ul class="sortable-list space-y-0.3 flex-1 min-h-[20px]" data-widget-id="{{ widget.id }}">
+                    <ul class="sortable-list space-y-0.5 flex-1 min-h-[20px]" data-widget-id="{{ widget.id }}">
                         {% for link in widget.links.all %}
-
                         <li class="flex items-center space-x-2 py-1 px-2 hover:bg-gray-700 rounded cursor-grab active:cursor-grabbing group relative border border-transparent hover:border-gray-600 transition-all"
                             data-id="{{ link.id }}"
                             oncontextmenu="showContextMenu(event, '{{ link.id }}')">
 
-                            <img src="{{ link.icon_url|default:'https://www.google.com/s2/favicons?domain='|add:link.url }}"
-                                 class="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 pointer-events-none">
-
-                            <a href="{{ link.url }}" target="_blank" class="truncate text-sm text-blue-300 hover:text-blue-100 flex-1 font-medium leading-tight">
-                                {{ link.title }}
-                            </a>
-
-                            <a href="{% url 'delete_link' link.id %}"
-                               onclick="return confirm('Supprimer ?')"
-                               class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 px-1 text-xs font-bold transition-opacity z-20">
-                                &times;
-                            </a>
+                            <img src="{{ link.icon_url|default:'https://www.google.com/s2/favicons?domain='|add:link.url }}" class="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 pointer-events-none">
+                            <a href="{{ link.url }}" target="_blank" class="truncate text-sm text-blue-300 hover:text-blue-100 flex-1 font-medium leading-tight">{{ link.title }}</a>
+                            <a href="{% url 'delete_link' link.id %}" onclick="return confirm('Supprimer ?')" class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 px-1 text-xs font-bold transition-opacity z-20">&times;</a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -150,9 +166,14 @@
             </div>
 
         {% else %}
-        <div class="text-center text-gray-500 mt-10">Aucune page configurée. Lancez la commande seed_db !</div>
+            <div class="text-center text-gray-500 mt-10">Aucune page configurée.</div>
         {% endif %}
     </div>
+
+
+
+
+
 
 
     <div id="context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-xl w-56 py-1 text-sm">
@@ -175,6 +196,32 @@
             </div>
         </div>
     </div>
+
+
+<div id="widget-context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-2xl w-56 py-1 text-sm fixed z-50 hidden">
+    <div class="px-4 py-2 font-bold border-b border-gray-700 text-orange-400 text-xs uppercase bg-gray-900">
+        Déplacer la catégorie vers...
+    </div>
+
+    {% for page in pages %}
+        {% if page != active_page %}
+        <form action="{% url 'move_widget' 0 %}" method="POST" class="widget-move-form">
+            {% csrf_token %}
+            <input type="hidden" name="target_page_id" value="{{ page.id }}">
+            <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-600 border-b border-gray-700 last:border-0 flex justify-between group">
+                {{ page.name }}
+                <span class="hidden group-hover:inline">➔</span>
+            </button>
+        </form>
+        {% endif %}
+    {% endfor %}
+</div>
+
+
+
+
+
+
 
 <div id="modal-add-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
     <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
@@ -240,53 +287,87 @@
 </div>
 {% endif %}
 
-<div id="widget-context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-2xl w-56 py-1 text-sm fixed z-50 hidden">
-    <div class="px-4 py-2 font-bold border-b border-gray-700 text-orange-400 text-xs uppercase bg-gray-900">
-        Déplacer la catégorie vers...
+
+<div id="modal-add-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+            <h2 class="text-xl font-bold text-white mb-4">Nouvelle Page</h2>
+            <form action="{% url 'create_page' %}" method="POST">
+                {% csrf_token %}
+                <label class="block text-gray-400 text-sm mb-2">Nom de la page</label>
+                <input type="text" name="name" required autofocus
+                       class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
+                       placeholder="Ex: Cuisine, Voyage...">
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="toggleModal('modal-add-page')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">Créer</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    {% for page in pages %}
-        {% if page != active_page %}
-        <form action="{% url 'move_widget' 0 %}" method="POST" class="widget-move-form">
-            {% csrf_token %}
-            <input type="hidden" name="target_page_id" value="{{ page.id }}">
-            <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-600 border-b border-gray-700 last:border-0 flex justify-between group">
-                {{ page.name }}
-                <span class="hidden group-hover:inline">➔</span>
-            </button>
-        </form>
-        {% endif %}
-    {% endfor %}
-</div>
+    {% if active_page %}
 
-{% if active_page %}
-<div id="modal-add-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
-    <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
-        <h2 class="text-xl font-bold text-white mb-4">Nouvelle Catégorie</h2>
+    <div id="modal-rename-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+            <h2 class="text-xl font-bold text-white mb-4">Renommer la page</h2>
+            <form action="{% url 'rename_page' active_page.id %}" method="POST">
+                {% csrf_token %}
+                <label class="block text-gray-400 text-sm mb-2">Nouveau nom</label>
+                <input type="text" name="name" required value="{{ active_page.name }}"
+                       class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-yellow-500 focus:outline-none">
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="toggleModal('modal-rename-page')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded font-bold">Renommer</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        <form action="{% url 'add_widget' active_page.id %}" method="POST">
-            {% csrf_token %}
-            <label class="block text-gray-400 text-sm mb-2">Titre de la catégorie</label>
-            <input type="text" name="title" required autofocus
-                   class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
-                   placeholder="Ex: Sports, Recettes...">
-
+    <div id="modal-delete-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
+            <h2 class="text-xl font-bold text-white mb-2">Supprimer la page ?</h2>
+            <p class="text-gray-300 mb-6">
+                Voulez-vous vraiment supprimer <strong>"{{ active_page.name }}"</strong> ?<br>
+                Tous les widgets et les liens à l'intérieur seront perdus.
+            </p>
             <div class="flex justify-end space-x-3">
-                <button type="button" onclick="toggleModal('modal-add-widget')"
-                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
-                    Annuler
-                </button>
-                <button type="submit"
-                        class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">
-                    Créer
-                </button>
+                <button type="button" onclick="toggleModal('modal-delete-page')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                <a href="{% url 'delete_page' active_page.id %}" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">Confirmer la suppression</a>
             </div>
-        </form>
+        </div>
     </div>
-</div>
-{% endif %}
 
+    <div id="modal-add-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+            <h2 class="text-xl font-bold text-white mb-4">Nouvelle Catégorie</h2>
+            <form action="{% url 'add_widget' active_page.id %}" method="POST">
+                {% csrf_token %}
+                <label class="block text-gray-400 text-sm mb-2">Titre de la catégorie</label>
+                <input type="text" name="title" required autofocus
+                       class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
+                       placeholder="Ex: Sports, Recettes...">
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="toggleModal('modal-add-widget')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <div id="modal-delete-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
+            <h2 class="text-xl font-bold text-white mb-2">Supprimer la catégorie ?</h2>
+            <p class="text-gray-300 mb-6">
+                Cette action est irréversible. Tous les liens contenus dans cette catégorie seront perdus.
+            </p>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="toggleModal('modal-delete-widget')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                <a id="btn-confirm-delete-widget" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">Confirmer</a>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
 
 
 
@@ -433,6 +514,42 @@
         });
     }
     document.addEventListener('click', () => menu.style.display = 'none');
+
+
+    // Fonction pour ouvrir la modale de suppression de widget
+        function confirmDeleteWidget(widgetId) {
+            const confirmBtn = document.getElementById('btn-confirm-delete-widget');
+            // Met à jour le lien du bouton "Confirmer" avec l'ID correct
+            confirmBtn.href = "/widget/delete/" + widgetId + "/";
+            toggleModal('modal-delete-widget');
+        }
+
+    // --- HORLOGE DIGITALE ---
+    function updateClock() {
+        const clockEl = document.getElementById('clock-display');
+        const dateEl = document.getElementById('date-display');
+
+        if (!clockEl) return; // On arrête si on n'est pas sur la page Infos
+
+        const now = new Date();
+
+        // Heure (HH:MM:SS)
+        clockEl.textContent = now.toLocaleTimeString('fr-CA', {
+            hour12: false
+        });
+
+        // Date (Lundi 21 Novembre 2025)
+        dateEl.textContent = now.toLocaleDateString('fr-CA', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+    }
+
+    // Lancer l'horloge seulement si on est sur la bonne page
+    if(document.getElementById('clock-display')) {
+        setInterval(updateClock, 1000);
+        updateClock();
+    }
+
 </script>
 
 </body>

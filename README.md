@@ -7,6 +7,10 @@ Un tableau de bord (Dashboard) personnel, auto-hébergé et interactif, inspiré
 ### Organisation
 * **Structure Hiérarchique** : Pages (Onglets) > Widgets (Catégories) > Liens.
 * **Barre de Recherche** : Recherche Google intégrée directement dans le dashboard.
+* **Page "Infos" Spéciale** : Si une page est nommée **"Infos"**, elle affiche automatiquement :
+    * Météo locale (via wttr.in).
+    * Horloge numérique en temps réel.
+    * Liste de suivi des marchés financiers (via TradingView).
 
 ### Drag & Drop (Glisser-Déposer)
 * **Liens** : Déplacez les liens d'une catégorie à une autre ou réorganisez-les au sein d'une liste.
@@ -18,7 +22,7 @@ Un tableau de bord (Dashboard) personnel, auto-hébergé et interactif, inspiré
     * **Créer** : Bouton `+` dans la barre d'onglets.
     * **Renommer/Supprimer** : Boutons `✎` et `🗑` disponibles pour la page active (avec fenêtres de confirmation).
 * **Catégories (Widgets)** :
-    * **Ajouter** : Bouton `+ Catégorie` situé à côté de la barre de recherche.
+    * **Ajouter** : Bouton bleu `+ Catégorie` situé à côté de la barre de recherche.
     * **Supprimer** : Icône `🗑` dans l'en-tête du widget (avec fenêtre de confirmation sécurisée).
     * **Déplacer** : Icône `➜` pour envoyer une catégorie entière vers une autre page.
 * **Liens** :
@@ -27,14 +31,14 @@ Un tableau de bord (Dashboard) personnel, auto-hébergé et interactif, inspiré
 
 ### Interface (UI/UX)
 * **Design** : Mode sombre (Dark Mode) utilisant Tailwind CSS.
-* **Interactivité** : Fenêtres modales (Popups) pour toutes les actions importantes (création, suppression), remplaçant les alertes natives du navigateur pour une meilleure expérience.
+* **Interactivité** : Fenêtres modales (Popups) pour toutes les actions importantes, remplaçant les alertes natives du navigateur pour une expérience fluide.
 
 ## 🛠️ Stack Technique
 
 * **Backend** : Python 3.12, Django 5.2.
 * **Frontend** :
     * **HTML5/CSS3** : Structure et mise en page.
-    * **Tailwind CSS** : Framework CSS utilitaire (via CDN ou fichiers locaux).
+    * **Tailwind CSS** : Framework CSS utilitaire (fichiers locaux pour support hors-ligne/Firefox).
     * **HTMX** : Pour les interactions AJAX légères.
     * **SortableJS** : Pour la gestion fluide du Drag & Drop.
 * **Base de données** : SQLite (par défaut, zéro config), compatible PostgreSQL.
@@ -57,6 +61,32 @@ source .venv/bin/activate  # Sur Linux/Mac
 
 # Installer les dépendances
 pip install django
+
+### Personnalisation (Guide Rapide)
+ - Le design est géré via Tailwind CSS directement dans dashboard/templates/dashboard/index.html. Voici les lignes clés à modifier pour ajuster l'apparence.
+ - 1. Changer la largeur des colonnes (Catégories)
+ -- Cherchez la ligne contenant id="widget-grid". Modifiez la classe lg:grid-cols-4 :
+ -- Plus large : lg:grid-cols-3 (3 colonnes par ligne)
+ -- Plus petit : lg:grid-cols-5 (5 colonnes par ligne)
+ -- Mobile : grid-cols-1 (1 colonne par défaut sur petit écran)
+ - 2. Changer les couleurs (Thème)
+ --  Fond de la page : Dans la balise <body>, changez bg-gray-900.
+ -- Fond des boîtes : Cherchez et remplacez partout bg-gray-800.
+ -- Titres (Orange) : Cherchez text-orange-400 et remplacez par text-blue-400, text-green-400, etc.
+
+ - 3. Espacement des liens (Densité)
+ -- Dans la liste des liens (<ul class="sortable-list ...">) :
+ -- Écart vertical : Modifiez space-y-0.5 (0.5 = très serré, 2 = aéré).
+ -- Hauteur de ligne : Dans les balises <li>, modifiez py-1 (padding vertical).
+
+ - 4. Modifier les données Bourse (Tickers)
+ -- Le widget Bourse est un script TradingView intégré dans la section "Infos". Pour changer les actions affichées :
+
+Ouvrez index.html.
+Cherchez le bloc ``.
+Dans le script JSON, modifiez la liste "symbols".
+Format : { "s": "MARCHE:SYMBOLE", "d": "Nom affiché" }
+Exemple : { "s": "NASDAQ:AAPL", "d": "Apple" }
 
 
 ### Structure du Projet

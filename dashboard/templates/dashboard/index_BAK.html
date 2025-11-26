@@ -4,10 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard Perso</title>
-
-    <script src="{% static 'js/tailwind.js' %}"></script>
-    <script src="{% static 'js/htmx.js' %}"></script>
-    <script src="{% static 'js/sortable.js' %}"></script>
+{#    <script src="https://cdn.tailwindcss.com"></script>#}
+{#    <script src="https://unpkg.com/htmx.org@1.9.6"></script>#}
+{#    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>#}
+     <script src="{% static 'js/tailwind.js' %}"></script>
+     <script src="{% static 'js/htmx.js' %}"></script>
+     <script src="{% static 'js/sortable.js' %}"></script>
 
     <script>
             tailwind.config = {
@@ -30,8 +32,11 @@
         #context-menu { display: none; position: absolute; z-index: 50; }
         .sortable-ghost { opacity: 0.4; background-color: #4B5563; }
     </style>
+
+
 </head>
 <body class="bg-gray-900 text-gray-200 font-sans min-h-screen select-none">
+
 
 <nav class="flex items-center space-x-2 p-3 bg-black border-b border-gray-800 overflow-x-auto">
     <div class="font-bold text-xl mr-4 text-white">≡ Pages</div>
@@ -67,17 +72,21 @@
     {% endif %}
 </nav>
 
+
     <div class="flex justify-center items-center py-8 px-4 gap-4">
 
         <form action="https://www.google.com/search" method="GET" target="_blank"
               class="w-full max-w-2xl relative group">
+
             <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
+
             <input type="text" name="q" placeholder="Rechercher sur le web..." autofocus
                    class="w-full bg-gray-800 text-white text-lg border border-gray-700 rounded-full py-3 pl-12 pr-4 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-500">
+
             <div class="absolute inset-0 rounded-full bg-blue-500 opacity-0 group-focus-within:opacity-20 blur-md transition-opacity -z-10"></div>
         </form>
 
@@ -88,10 +97,11 @@
             <span class="text-xl mr-2 leading-none">+</span> Catégorie
         </button>
         {% endif %}
+
     </div>
 
 
-    <div class="p-6">
+<div class="p-6">
         {% if active_page %}
 
             <div id="widget-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -175,7 +185,7 @@
 
                             <img src="{{ link.icon_url|default:'https://www.google.com/s2/favicons?domain='|add:link.url }}" class="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 pointer-events-none">
                             <a href="{{ link.url }}" target="_blank" class="truncate text-sm text-blue-300 hover:text-blue-100 flex-1 font-medium leading-tight">{{ link.title }}</a>
-                            <button onclick="confirmDeleteLink('{{ link.id }}')" class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 px-1 text-lg font-bold transition-opacity z-20" title="Supprimer ce lien">&times;</button>
+                            <a href="{% url 'delete_link' link.id %}" onclick="return confirm('Supprimer ?')" class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 px-1 text-xs font-bold transition-opacity z-20">&times;</a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -185,9 +195,10 @@
             </div>
 
         {% else %}
-            <div class="text-center text-gray-500 mt-10">Aucune page configurée. Lancez la commande seed_db !</div>
+            <div class="text-center text-gray-500 mt-10">Aucune page configurée.</div>
         {% endif %}
     </div>
+
 
 
     <div id="context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-xl w-56 py-1 text-sm">
@@ -211,25 +222,93 @@
         </div>
     </div>
 
-    <div id="widget-context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-2xl w-56 py-1 text-sm fixed z-50 hidden">
-        <div class="px-4 py-2 font-bold border-b border-gray-700 text-orange-400 text-xs uppercase bg-gray-900">
-            Déplacer la catégorie vers...
-        </div>
-        {% for page in pages %}
-            {% if page != active_page %}
-            <form action="{% url 'move_widget' 0 %}" method="POST" class="widget-move-form">
-                {% csrf_token %}
-                <input type="hidden" name="target_page_id" value="{{ page.id }}">
-                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-600 border-b border-gray-700 last:border-0 flex justify-between group">
-                    {{ page.name }}
-                    <span class="hidden group-hover:inline">➔</span>
-                </button>
-            </form>
-            {% endif %}
-        {% endfor %}
+
+<div id="widget-context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-2xl w-56 py-1 text-sm fixed z-50 hidden">
+    <div class="px-4 py-2 font-bold border-b border-gray-700 text-orange-400 text-xs uppercase bg-gray-900">
+        Déplacer la catégorie vers...
     </div>
 
-    <div id="modal-add-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    {% for page in pages %}
+        {% if page != active_page %}
+        <form action="{% url 'move_widget' 0 %}" method="POST" class="widget-move-form">
+            {% csrf_token %}
+            <input type="hidden" name="target_page_id" value="{{ page.id }}">
+            <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-600 border-b border-gray-700 last:border-0 flex justify-between group">
+                {{ page.name }}
+                <span class="hidden group-hover:inline">➔</span>
+            </button>
+        </form>
+        {% endif %}
+    {% endfor %}
+</div>
+
+
+<div id="modal-add-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+        <h2 class="text-xl font-bold text-white mb-4">Nouvelle Page</h2>
+
+        <form action="{% url 'create_page' %}" method="POST">
+            {% csrf_token %}
+            <label class="block text-gray-400 text-sm mb-2">Nom de la page</label>
+            <input type="text" name="name" required autofocus
+                   class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
+                   placeholder="Ex: Cuisine, Voyage...">
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="toggleModal('modal-add-page')"
+                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">
+                    Créer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if active_page %}
+<div id="modal-rename-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+        <h2 class="text-xl font-bold text-white mb-4">Renommer la page</h2>
+
+        <form action="{% url 'rename_page' active_page.id %}" method="POST">
+            {% csrf_token %}
+            <label class="block text-gray-400 text-sm mb-2">Nouveau nom</label>
+            <input type="text" name="name" required value="{{ active_page.name }}"
+                   class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-yellow-500 focus:outline-none">
+
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="toggleModal('modal-rename-page')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded font-bold">Renommer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-delete-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
+        <h2 class="text-xl font-bold text-white mb-2">Supprimer la page ?</h2>
+        <p class="text-gray-300 mb-6">
+            Voulez-vous vraiment supprimer <strong>"{{ active_page.name }}"</strong> ?<br>
+            Tous les widgets et les liens à l'intérieur seront perdus.
+        </p>
+
+        <div class="flex justify-end space-x-3">
+            <button type="button" onclick="toggleModal('modal-delete-page')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+
+            <a href="{% url 'delete_page' active_page.id %}"
+               class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">
+               Confirmer la suppression
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+<div id="modal-add-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
         <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
             <h2 class="text-xl font-bold text-white mb-4">Nouvelle Page</h2>
             <form action="{% url 'create_page' %}" method="POST">
@@ -239,8 +318,7 @@
                        class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
                        placeholder="Ex: Cuisine, Voyage...">
                 <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="toggleModal('modal-add-page')"
-                            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                    <button type="button" onclick="toggleModal('modal-add-page')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
                     <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">Créer</button>
                 </div>
             </form>
@@ -248,6 +326,7 @@
     </div>
 
     {% if active_page %}
+
     <div id="modal-rename-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
         <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
             <h2 class="text-xl font-bold text-white mb-4">Renommer la page</h2>
@@ -273,7 +352,7 @@
             </p>
             <div class="flex justify-end space-x-3">
                 <button type="button" onclick="toggleModal('modal-delete-page')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
-                <a href="{% url 'delete_page' active_page.id %}" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">Confirmer</a>
+                <a href="{% url 'delete_page' active_page.id %}" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">Confirmer la suppression</a>
             </div>
         </div>
     </div>
@@ -308,57 +387,76 @@
         </div>
     </div>
 
-    <div id="modal-delete-link" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+<div id="modal-delete-link" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
         <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
             <h2 class="text-xl font-bold text-white mb-2">Supprimer ce lien ?</h2>
             <p class="text-gray-300 mb-6">
                 Voulez-vous vraiment retirer ce lien de votre tableau de bord ?
             </p>
+
             <div class="flex justify-end space-x-3">
-                <button type="button" onclick="toggleModal('modal-delete-link')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
-                <a id="btn-confirm-delete-link" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">Confirmer</a>
+                <button type="button" onclick="toggleModal('modal-delete-link')"
+                        class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
+                    Annuler
+                </button>
+
+                <a id="btn-confirm-delete-link" href="#"
+                   class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">
+                   Confirmer
+                </a>
             </div>
         </div>
     </div>
 
-    {% endif %}
+{% endif %}
+
+
 
 <script>
-    // --- GESTION DU MENU WIDGET (Déplacement catégorie) ---
+
+
+    // --- GESTION DU MENU WIDGET ---
     const widgetMenu = document.getElementById('widget-context-menu');
 
     function showWidgetMenu(e, widgetId) {
-        e.preventDefault();
-        e.stopPropagation();
+            e.preventDefault(); // Empêche le comportement par défaut (utile si c'était un lien)
+            e.stopPropagation(); // Empêche de déclencher le drag & drop en cliquant
 
-        // Positionnement sous la souris
-        widgetMenu.style.left = e.clientX + 'px';
-        widgetMenu.style.top = e.clientY + 'px';
-        widgetMenu.classList.remove('hidden');
+            // On positionne le menu exactement sous le curseur de la souris
+            // C'est la méthode la plus fiable
+            widgetMenu.style.left = e.clientX + 'px';
+            widgetMenu.style.top = e.clientY + 'px';
 
-        // Mise à jour de l'action du formulaire
-        document.querySelectorAll('.widget-move-form').forEach(form => {
-            let baseAction = form.getAttribute('action');
-            let newAction = baseAction.replace(/\/\d+\/$/, '/' + widgetId + '/');
-            form.setAttribute('action', newAction);
-        });
-    }
+            widgetMenu.classList.remove('hidden');
 
-    // Fermeture des menus
+            // Mise à jour des liens du menu (inchangé)
+            document.querySelectorAll('.widget-move-form').forEach(form => {
+                let baseAction = form.getAttribute('action');
+                // Remplace l'ancien ID (dernier chiffre) par le nouveau
+                let newAction = baseAction.replace(/\/\d+\/$/, '/' + widgetId + '/');
+                form.setAttribute('action', newAction);
+            });
+        }
+
+    // Fermer le menu si on clique n'importe où ailleurs
     document.addEventListener('click', function(e) {
-        if (widgetMenu && !widgetMenu.contains(e.target)) {
+        if (!widgetMenu.contains(e.target)) {
             widgetMenu.classList.add('hidden');
         }
-        // Menu contextuel des liens aussi
-        const linkMenu = document.getElementById('context-menu');
-        if (linkMenu) linkMenu.style.display = 'none';
     });
 
-    // --- GESTION DES MODALES (Popup) ---
+    // Fermer aussi avec la touche ESC
+    document.addEventListener('keydown', function(e) {
+        if(e.key === "Escape") widgetMenu.classList.add('hidden');
+    });
+
+
+    // Fonction pour ouvrir/fermer une modale
     function toggleModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal.classList.contains('hidden')) {
             modal.classList.remove('hidden');
+            // Focus automatique sur le champ input quand on ouvre
             const input = modal.querySelector('input');
             if(input) setTimeout(() => input.focus(), 100);
         } else {
@@ -366,38 +464,26 @@
         }
     }
 
+    // Fermer la modale avec la touche ESC
     document.addEventListener('keydown', function(event) {
         if (event.key === "Escape") {
-            document.querySelectorAll('[id^="modal-"]').forEach(modal => modal.classList.add('hidden'));
-            if(widgetMenu) widgetMenu.classList.add('hidden');
+            document.querySelectorAll('[id^="modal-"]').forEach(modal => {
+                modal.classList.add('hidden');
+            });
         }
     });
 
-    // --- PRÉPARATION SUPPRESSION (Injection ID dans le lien) ---
-    function confirmDeleteWidget(widgetId) {
-        const confirmBtn = document.getElementById('btn-confirm-delete-widget');
-        confirmBtn.href = "/widget/delete/" + widgetId + "/";
-        toggleModal('modal-delete-widget');
-    }
-
-    function confirmDeleteLink(linkId) {
-        const confirmBtn = document.getElementById('btn-confirm-delete-link');
-        confirmBtn.href = "/link/delete/" + linkId + "/";
-        toggleModal('modal-delete-link');
-    }
-
-    // --- AFFICHAGE FORMULAIRE LIEN ---
+    // 1. Fonction pour afficher/cacher le formulaire d'ajout
     function toggleForm(formId) {
         const form = document.getElementById(formId);
         if (form.classList.contains('hidden')) {
             form.classList.remove('hidden');
-            form.querySelector('input').focus();
         } else {
             form.classList.add('hidden');
         }
     }
 
-    // --- DRAG & DROP : LIENS ---
+    // 2. Drag & Drop des LIENS (Votre code existant)
     document.querySelectorAll('.sortable-list').forEach(function(list) {
         new Sortable(list, {
             group: 'shared',
@@ -413,59 +499,98 @@
                 formData.append('widget_id', widgetId);
                 linkIds.forEach(id => formData.append('link', id));
 
-                fetch('/api/update-order/', { method: 'POST', body: formData });
+                fetch('/api/update-order/', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.ok) console.log('Sauvegarde liens OK');
+                });
             }
         });
     });
 
-    // --- DRAG & DROP : CATÉGORIES (Widgets) ---
+    // --- NOUVEAU CODE À INSÉRER ICI ---
+
+    // 3. Drag & Drop des WIDGETS (Catégories)
     var widgetGrid = document.getElementById('widget-grid');
-    if (widgetGrid) {
+    if (widgetGrid) { // On vérifie que la grille existe
         new Sortable(widgetGrid, {
             animation: 150,
-            handle: '.widget-handle',
+            handle: '.widget-handle', // IMPORTANT: On ne bouge que via l'entête
             ghostClass: 'bg-gray-700',
             onEnd: function (evt) {
+                // On récupère l'ordre des widgets (divs)
                 var listItems = widgetGrid.children;
                 var widgetIds = Array.from(listItems).map(div => div.getAttribute('data-id'));
 
+                // Préparation
                 var formData = new FormData();
                 widgetIds.forEach(id => formData.append('widget', id));
 
-                fetch('/api/update-widget-order/', { method: 'POST', body: formData });
+                // Envoi
+                fetch('/api/update-widget-order/', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if(response.ok) console.log('Ordre des widgets sauvegardé');
+                });
             }
         });
     }
 
-    // --- MENU CONTEXTUEL : LIENS (Clic Droit) ---
-    const linkMenu = document.getElementById('context-menu');
+    // 4. Menu Contextuel (Votre code existant décalé à la fin)
+    const menu = document.getElementById('context-menu');
     function showContextMenu(e, linkId) {
         e.preventDefault();
-        linkMenu.style.left = e.pageX + 'px';
-        linkMenu.style.top = e.pageY + 'px';
-        linkMenu.style.display = 'block';
+        menu.style.left = e.pageX + 'px';
+        menu.style.top = e.pageY + 'px';
+        menu.style.display = 'block';
 
         document.querySelectorAll('form[hx-post]').forEach(form => {
             let url = form.getAttribute('hx-post').replace(/\d+$/, linkId);
             form.setAttribute('hx-post', url);
-            if (typeof htmx !== 'undefined') htmx.process(form);
+            if (typeof htmx !== 'undefined') {
+                htmx.process(form);
+            }
         });
     }
+    document.addEventListener('click', () => menu.style.display = 'none');
+
+
+    // Fonction pour ouvrir la modale de suppression de widget
+        function confirmDeleteWidget(widgetId) {
+            const confirmBtn = document.getElementById('btn-confirm-delete-widget');
+            // Met à jour le lien du bouton "Confirmer" avec l'ID correct
+            confirmBtn.href = "/widget/delete/" + widgetId + "/";
+            toggleModal('modal-delete-widget');
+        }
 
     // --- HORLOGE DIGITALE ---
     function updateClock() {
         const clockEl = document.getElementById('clock-display');
         const dateEl = document.getElementById('date-display');
-        if (!clockEl) return;
+
+        if (!clockEl) return; // On arrête si on n'est pas sur la page Infos
 
         const now = new Date();
-        clockEl.textContent = now.toLocaleTimeString('fr-CA', { hour12: false });
-        dateEl.textContent = now.toLocaleDateString('fr-CA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Heure (HH:MM:SS)
+        clockEl.textContent = now.toLocaleTimeString('fr-CA', {
+            hour12: false
+        });
+
+        // Date (Lundi 21 Novembre 2025)
+        dateEl.textContent = now.toLocaleDateString('fr-CA', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
     }
+
+    // Lancer l'horloge seulement si on est sur la bonne page
     if(document.getElementById('clock-display')) {
         setInterval(updateClock, 1000);
         updateClock();
     }
+
 </script>
 
 </body>

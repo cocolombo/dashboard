@@ -111,3 +111,5 @@ Exemple : { "s": "NASDAQ:AAPL", "d": "Apple" }
  - Supprimer : Utilisez les icônes corbeille 🗑. Une fenêtre vous demandera toujours confirmation avant la suppression définitive d'une page ou d'une catégorie.
 
 
+### Progression
+20251126 14:50 Édition Inline

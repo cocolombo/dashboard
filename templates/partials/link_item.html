@@ -1,0 +1,22 @@
+<li class="flex items-center space-x-2 py-1 px-2 hover:bg-gray-700/50 rounded-sm cursor-grab active:cursor-grabbing group relative border border-transparent hover:border-gray-600 transition-all"
+    data-id="{{ link.id }}"
+    oncontextmenu="showContextMenu(event, '{{ link.id }}')">
+
+    <img src="{{ link.icon_url|default:'https://www.google.com/s2/favicons?domain='|add:link.url }}" class="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 pointer-events-none">
+
+    <a href="{{ link.url }}" target="_blank" class="truncate text-sm text-blue-300 hover:text-blue-100 flex-1 font-medium leading-none pt-0.5">
+        {{ link.title }}
+    </a>
+
+    <button hx-get="{% url 'edit_link' link.id %}" 
+            hx-target="closest li" 
+            hx-swap="outerHTML"
+            class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-yellow-500 px-1 transition-opacity">
+        ✎
+    </button>
+
+    <button onclick="confirmDeleteLink('{{ link.id }}')" 
+            class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 px-1 font-bold transition-opacity leading-none">
+        &times;
+    </button>
+</li>

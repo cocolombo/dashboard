@@ -299,7 +299,35 @@ def add_widget(request, page_id):
     # On recharge la page courante
     return redirect('index', slug=page.slug)
 
+def rename_widget(request, pk):
+    widget = get_object_or_404(Widget, pk=pk)
 
+    # 1. Si on reçoit du POST, c'est que l'utilisateur a validé le formulaire
+    if request.method == "POST":
+        new_title = request.POST.get('title')
+        if new_title:
+            widget.title = new_title
+            widget.save()
+        # On renvoie le template d'affichage (le HTML normal)
+        return render(request, 'partials/widget_title.html', {'widget': widget})
+
+    # 2. Si on reçoit du GET, c'est que l'utilisateur a cliqué pour éditer
+    # On renvoie le formulaire d'édition
+    return render(request, 'partials/widget_title_form.html', {'widget': widget})
+
+
+# views.py
+def edit_link(request, pk):
+    link = get_object_or_404(Link, pk=pk)
+
+    if request.method == "POST":
+        link.title = request.POST.get('title')
+        link.url = request.POST.get('url')
+        # On peut aussi relancer la récupération du favicon si l'URL change
+        link.save()
+        return render(request, 'partials/link_item.html', {'link': link})
+
+    return render(request, 'partials/link_form.html', {'link': link})
 
 
 

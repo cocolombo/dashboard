@@ -1,0 +1,8 @@
+<h3 
+    class="font-bold text-orange-400 text-lg flex-1 cursor-text hover:text-orange-300 transition-colors"
+    hx-get="{% url 'rename_widget' widget.pk %}" 
+    hx-trigger="click" 
+    hx-target="this" 
+    hx-swap="outerHTML">
+    {{ widget.title }}
+</h3>

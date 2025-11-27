@@ -98,14 +98,55 @@
 
                 {% if active_page.slug == 'infos' %}
 
-                    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex items-center justify-center overflow-hidden relative group">
-                        <h3 class="font-bold text-orange-400 text-lg absolute top-4 left-4 z-10 bg-gray-800/80 px-2 rounded backdrop-blur-sm">Météo</h3>
-                        <a href="https://wttr.in/Montreal?lang=fr" target="_blank">
-                            <img src="https://wttr.in/Montreal.png?0&Q&lang=fr"
-                                 alt="Météo"
-                                 class="transform scale-150 transition-transform duration-500 group-hover:scale-[1.6]">
-                        </a>
+{#                    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex items-center justify-center overflow-hidden relative group">#}
+{#                        <h3 class="font-bold text-orange-400 text-lg absolute top-4 left-4 z-10 bg-gray-800/80 px-2 rounded backdrop-blur-sm">Météo</h3>#}
+{#                        <a href="https://wttr.in/Montreal?lang=fr" target="_blank">#}
+{#                            <img src="https://wttr.in/Montreal.png?0&Q&lang=fr"#}
+{#                                 alt="Météo"#}
+{#                                 class="transform scale-150 transition-transform duration-500 group-hover:scale-[1.6]">#}
+{#                        </a>#}
+{#                    </div>#}
+
+
+                    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-48 flex flex-col justify-between relative overflow-hidden">
+
+                        <div class="flex justify-between items-start z-10">
+                            <div>
+                                <h3 class="font-bold text-white text-xl">Météo</h3>
+                                <p class="text-sm text-gray-400 uppercase tracking-wider mt-1">Montréal, QC</p>
+                            </div>
+                            <div class="text-right">
+                                <div id="current-temp" class="text-4xl font-bold text-white">--°</div>
+                                <div id="current-desc" class="text-xs text-gray-400 capitalize">Chargement...</div>
+                            </div>
+                        </div>
+
+                        <div id="forecast-grid" class="grid grid-cols-3 gap-2 mt-4 z-10">
+                            <div class="text-center animate-pulse">
+                                <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
+                                <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
+                            </div>
+                            <div class="text-center animate-pulse delay-75">
+                                <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
+                                <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
+                            </div>
+                            <div class="text-center animate-pulse delay-150">
+                                <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
+                                <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
+                            </div>
+                        </div>
+
+                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                        <div class="absolute -left-10 -top-10 w-40 h-40 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
                     </div>
+
+
+
+
+
+
+
+
 
                     <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex flex-col justify-center items-center">
                         <h3 class="font-bold text-orange-400 w-full text-left mb-2">Heure Locale</h3>
@@ -153,8 +194,9 @@
                 {% for widget in active_page.widgets.all %}
                     <div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 flex flex-col group/widget" data-id="{{ widget.id }}">
 
+
                         <div class="widget-handle flex justify-between items-center mb-3 border-b border-gray-600 pb-2 cursor-move select-none">
-                            <h3 class="font-bold text-orange-400 text-lg pointer-events-none flex-1">{{ widget.title }}</h3>
+                            {% include "partials/widget_title.html" %}
                             <div class="flex items-center space-x-1">
                                 <button onclick="showWidgetMenu(event, '{{ widget.id }}')" class="text-gray-500 hover:text-blue-400 font-bold text-lg px-2 transition-colors cursor-pointer" title="Déplacer">➜</button>
                                 <button onclick="confirmDeleteWidget('{{ widget.id }}')" class="text-gray-500 hover:text-red-500 font-bold text-lg px-2 transition-colors cursor-pointer" title="Supprimer">🗑</button>
@@ -171,19 +213,7 @@
 
                         <ul class="sortable-list space-y-0 flex-1 min-h-[20px]" data-widget-id="{{ widget.id }}">
                             {% for link in widget.links.all %}
-
-                            <li class="flex items-center space-x-2 py-0 px-2 hover:bg-gray-700 rounded-sm cursor-grab active:cursor-grabbing group relative border border-transparent hover:border-gray-600 transition-all"
-                                data-id="{{ link.id }}"
-                                oncontextmenu="showContextMenu(event, '{{ link.id }}')">
-
-                                <img src="{{ link.icon_url|default:'https://www.google.com/s2/favicons?domain='|add:link.url }}" class="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 pointer-events-none">
-
-                                <a href="{{ link.url }}" target="_blank" class="truncate text-xs text-blue-300 hover:text-blue-100 flex-1 font-medium leading-none pt-0.5">
-                                    {{ link.title }}
-                                </a>
-
-                                <button onclick="confirmDeleteLink('{{ link.id }}')" class="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 px-1 text-base font-bold transition-opacity z-20 leading-none" title="Supprimer ce lien">&times;</button>
-                            </li>
+                                {% include "partials/link_item.html" %}
                             {% endfor %}
                         </ul>
 
@@ -473,6 +503,85 @@
         setInterval(updateClock, 1000);
         updateClock();
     }
+
+
+    // Configuration Open-Meteo pour Montréal
+    const API_URL = "https://api.open-meteo.com/v1/forecast?latitude=45.5017&longitude=-73.5673&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FToronto&forecast_days=4";
+
+    // Mapping des codes météo WMO vers des Icônes/Emojis
+    // Codes: https://open-meteo.com/en/docs
+    function getWeatherIcon(code) {
+        const icons = {
+            0: '☀️', // Ciel dégagé
+            1: '🌤️', // Peu nuageux
+            2: '⛅', // Partiellement nuageux
+            3: '☁️', // Couvert
+            45: '🌫️', // Brouillard
+            48: '🌫️',
+            51: '🌦️', // Bruine
+            53: '🌦️',
+            55: '🌧️',
+            61: '🌧️', // Pluie
+            63: '🌧️',
+            65: '⛈️',
+            71: '🌨️', // Neige
+            73: '🌨️',
+            75: '❄️',
+            80: '🌦️', // Averses
+            81: '🌧️',
+            82: '⛈️',
+            95: '⛈️', // Orage
+        };
+        return icons[code] || '❓';
+    }
+
+    function getDayName(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('fr-FR', { weekday: 'short' });
+    }
+
+    async function fetchWeather() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+
+            // 1. Mise à jour Actuelle
+            document.getElementById('current-temp').innerText = Math.round(data.current.temperature_2m) + "°C";
+            document.getElementById('current-desc').innerText = "Code météo: " + data.current.weather_code; // On pourrait traduire le code en texte ici
+
+            // 2. Mise à jour Prévisions (Jours suivants)
+            const grid = document.getElementById('forecast-grid');
+            grid.innerHTML = ''; // Vider les placeholders
+
+            // On boucle sur les jours 1, 2 et 3 (on saute le 0 qui est aujourd'hui)
+            for (let i = 1; i < 4; i++) {
+                const dayName = getDayName(data.daily.time[i]);
+                const maxTemp = Math.round(data.daily.temperature_2m_max[i]);
+                const minTemp = Math.round(data.daily.temperature_2m_min[i]);
+                const icon = getWeatherIcon(data.daily.weather_code[i]);
+
+                const html = `
+                    <div class="flex flex-col items-center p-2 rounded hover:bg-gray-700/50 transition-colors">
+                        <span class="text-gray-400 text-xs uppercase font-bold mb-1">${dayName}.</span>
+                        <span class="text-2xl mb-1">${icon}</span>
+                        <div class="text-sm font-bold text-white">
+                            ${maxTemp}° <span class="text-gray-500 text-xs font-normal">| ${minTemp}°</span>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += html;
+            }
+
+        } catch (error) {
+            console.error("Erreur Météo:", error);
+            document.getElementById('current-desc').innerText = "Erreur chargement";
+        }
+    }
+
+    // Lancer au chargement
+    fetchWeather();
+    // Rafraichir toutes les 30 minutes
+    setInterval(fetchWeather, 1800000);
 </script>
 
 </body>

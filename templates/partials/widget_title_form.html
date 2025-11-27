@@ -1,0 +1,20 @@
+<form
+    hx-post="{% url 'rename_widget' widget.pk %}"
+    hx-target="this"
+    hx-swap="outerHTML"
+    class="flex items-center gap-2">
+
+    {% csrf_token %}
+
+    <input
+        type="text"
+        name="title"
+        value="{{ widget.title }}"
+        class="bg-gray-800 text-white border border-blue-500 rounded px-2 py-1 text-lg w-full focus:outline-none"
+        autocomplete="off"
+        autofocus
+        onfocus="this.select()"
+    >
+
+    <button type="submit" class="hidden">Save</button>
+</form>

@@ -10,6 +10,10 @@ urlpatterns = [
     path('widget/move/<int:widget_id>/', views.move_widget_to_page, name='move_widget'),
     path('widget/delete/<int:widget_id>/', views.delete_widget, name='delete_widget'),
     path('widget/add/<int:page_id>/', views.add_widget, name='add_widget'),
+    path('widget/<int:pk>/rename/', views.rename_widget, name='rename_widget'),
+    path('link/<int:pk>/edit/', views.edit_link, name='edit_link'),
+
+
 
     # --- API (Pour le Javascript) ---
     path('api/update-order/', views.update_link_order, name='update_order'),

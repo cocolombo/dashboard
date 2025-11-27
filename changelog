@@ -1,0 +1,29 @@
+# Historique des modifications (Changelog)
+
+Toutes les modifications notables de ce projet seront documentées dans ce fichier.
+
+## [Non publié] - En cours de développement
+### Ajouté
+- Fichier `CHANGELOG.md` pour le suivi de l'historique.
+- Séparation de la documentation technique vers `DEVELOPMENT.md` (recommandé).
+
+## [2025-11-26] - Mise à jour UI & Fonctionnalités dynamiques
+### Fonctionnalités
+- **Météo Dynamique** : Remplacement de l'image statique `wttr.in` par un widget interactif utilisant l'API Open-Meteo (JS). Affiche la météo actuelle et prévisions J+3.
+- **Édition Inline (Widgets)** : Possibilité de renommer les catégories directement en cliquant sur le titre (remplacement de la modale).
+- **Édition Inline (Liens)** : Possibilité de modifier le titre et l'URL d'un lien directement dans la liste via un bouton "crayon".
+
+### Technique
+- **Refactoring HTMX** : Extraction du code HTML des widgets et des liens vers des templates partiels (`templates/partials/`) pour supporter les mises à jour dynamiques `hx-swap`.
+- **Optimisation** : Suppression du champ `icon_url` inutile dans le modèle Link (logique déplacée vers le frontend ou calculée si nécessaire).
+
+## [2025-11-26] - Matin
+### Ajouté
+- Implémentation initiale de l'édition "Inline" avec HTMX.
+
+## [Archives] - Pushs précédents
+- Création de la structure initiale Django.
+- Intégration de Tailwind CSS en local.
+- Mise en place du Drag & Drop avec SortableJS.
+- Système de Pages et Widgets.
+- Page "Infos" avec widget TradingView et Horloge.

@@ -223,6 +223,13 @@
                     <div class="widget-handle flex justify-between items-center mb-3 border-b border-gray-600 pb-2 cursor-move select-none">
                         {% include "partials/widget_title.html" %}
                         <div class="flex items-center space-x-1">
+
+                            <button onclick="openAllLinks('{{ widget.id }}')"
+                                        class="text-gray-500 hover:text-purple-400 font-bold text-lg px-2 transition-colors cursor-pointer"
+                                        title="Ouvrir tous les liens dans de nouveaux onglets">
+                                    ⇱
+                            </button>
+
                             <button onclick="showWidgetMenu(event, '{{ widget.id }}')" class="text-gray-500 hover:text-blue-400 font-bold text-lg px-2 transition-colors cursor-pointer" title="Déplacer">➜</button>
                             <button onclick="confirmDeleteWidget('{{ widget.id }}')" class="text-gray-500 hover:text-red-500 font-bold text-lg px-2 transition-colors cursor-pointer" title="Supprimer">🗑</button>
                             <button onclick="toggleForm('form-{{ widget.id }}')" class="text-gray-500 hover:text-green-400 font-bold text-2xl leading-none px-2 transition-colors cursor-pointer" title="Ajouter">+</button>
@@ -709,6 +716,32 @@
             grid.innerHTML = html;
         }
     })();
+
+
+// --- OUVRIR TOUS LES LIENS ---
+    function openAllLinks(widgetId) {
+        // 1. Trouver le conteneur du widget
+        const widgetContainer = document.querySelector(`div[data-id="${widgetId}"]`);
+        if (!widgetContainer) return;
+
+        // 2. Trouver tous les liens <a> à l'intérieur
+        // On cible spécifiquement les liens dans la liste triable pour éviter d'ouvrir des boutons d'admin
+        const links = widgetContainer.querySelectorAll('ul.sortable-list a');
+
+        // 3. Confirmation si beaucoup de liens (Sécurité anti-crash)
+        if (links.length > 5) {
+            if (!confirm(`Voulez-vous vraiment ouvrir ${links.length} onglets d'un coup ?`)) {
+                return;
+            }
+        }
+
+        // 4. Ouvrir chaque lien
+        links.forEach(link => {
+            if (link.href) {
+                window.open(link.href, '_blank');
+            }
+        });
+    }
 
 
 </script>

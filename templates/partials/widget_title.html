@@ -1,8 +1,14 @@
 <h3 
-    class="font-bold text-orange-400 text-lg flex-1 cursor-text hover:text-orange-300 transition-colors"
+    class="font-bold text-orange-400 text-lg flex-1 cursor-text hover:text-orange-300 transition-colors flex items-center gap-2"
     hx-get="{% url 'rename_widget' widget.pk %}" 
     hx-trigger="click" 
     hx-target="this" 
     hx-swap="outerHTML">
+    
     {{ widget.title }}
+
+    <span class="text-sm text-gray-300 font-normal">
+        ({{ widget.links.all|length }})
+    </span>
+
 </h3>

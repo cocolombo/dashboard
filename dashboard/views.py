@@ -332,9 +332,3 @@ def edit_link(request, pk):
 
 
 
-
-
-
-
-
-

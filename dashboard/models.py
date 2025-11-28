@@ -1,4 +1,8 @@
 from django.db import models
+from django.utils import timezone
+import requests                                 # ← juste ça, rien d’autre
+from django.core.cache import cache       # ← pour ton modèle Calendar
+
 
 class Page(models.Model):
     name = models.CharField(max_length=100)
@@ -34,3 +38,4 @@ class Link(models.Model):
 
     def __str__(self):
         return self.title
+

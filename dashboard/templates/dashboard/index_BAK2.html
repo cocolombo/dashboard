@@ -128,18 +128,18 @@
                 <div id="forecast-grid" class="grid grid-cols-3 gap-2 mt-4 z-10">
                     <!-- Prévisions chargées dynamiquement -->
                     <div class="text-center animate-pulse">
-                        <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
-                        <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
-                    </div>
-                    <div class="text-center animate-pulse delay-75">
-                        <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
-                        <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
-                    </div>
-                    <div class="text-center animate-pulse delay-150">
-                        <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
-                        <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
-                    </div>
-                </div>
+                                <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
+                                <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
+                            </div>
+                            <div class="text-center animate-pulse delay-75">
+                                <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
+                                <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
+                            </div>
+                            <div class="text-center animate-pulse delay-150">
+                                <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
+                                <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
+                            </div>
+                        </div>
 
                 <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
                 <div class="absolute -left-10 -top-10 w-40 h-40 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
@@ -184,32 +184,9 @@
                             }
                           ]
                         }
-                  </script>
-                </div>
-            </div>
-
-     <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-96 flex flex-col">
-                <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                    <h3 id="cal-month-year" class="font-bold text-orange-400 text-lg capitalize">--</h3>
-                    <div class="text-xs text-gray-500 bg-gray-900 px-2 py-1 rounded border border-gray-600">Aujourd'hui</div>
-                </div>
-
-                <div class="grid grid-cols-7 gap-1 text-center mb-2">
-                    <div class="text-gray-500 text-xs font-bold">L</div>
-                    <div class="text-gray-500 text-xs font-bold">M</div>
-                    <div class="text-gray-500 text-xs font-bold">M</div>
-                    <div class="text-gray-500 text-xs font-bold">J</div>
-                    <div class="text-gray-500 text-xs font-bold">V</div>
-                    <div class="text-gray-500 text-xs font-bold">S</div>
-                    <div class="text-gray-500 text-xs font-bold">D</div>
-                </div>
-
-                <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-sm flex-1 content-start">
+                          </script>
+                        </div>
                     </div>
-            </div>
-
-
-
 
             {% endif %}
 
@@ -668,47 +645,6 @@
             toggleZenMode(); // Réactive le mode sans animation
         }
     });
-
-
-// ... vos scripts existants (Zen mode, Météo, etc.) ...
-
-    // --- LOGIQUE CALENDRIER ---
-    (function() {
-        const date = new Date();
-        const currYear = date.getFullYear();
-        const currMonth = date.getMonth();
-        const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-
-        const title = document.getElementById('cal-month-year');
-        const grid = document.getElementById('cal-days');
-
-        // Sécurité : on ne lance le code que si le widget existe sur la page
-        if(title && grid) {
-            // 1. Titre
-            title.innerText = `${monthNames[currMonth]} ${currYear}`;
-
-            // 2. Calculs
-            let firstDay = new Date(currYear, currMonth, 1).getDay();
-            // Ajustement Lundi=0 (JS renvoie Dimanche=0)
-            firstDay = firstDay === 0 ? 6 : firstDay - 1;
-            const lastDate = new Date(currYear, currMonth + 1, 0).getDate();
-
-            let html = "";
-            // Cases vides début de mois
-            for (let i = 0; i < firstDay; i++) {
-                html += `<div class="p-1"></div>`;
-            }
-            // Jours du mois
-            for (let i = 1; i <= lastDate; i++) {
-                let isToday = (i === date.getDate() && currMonth === new Date().getMonth() && currYear === new Date().getFullYear());
-                let classes = isToday
-                    ? "bg-blue-600 text-white font-bold shadow-md transform scale-110 rounded-full w-8 h-8 flex items-center justify-center mx-auto"
-                    : "text-gray-300 hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center mx-auto transition-colors cursor-default";
-                html += `<div class="${classes}">${i}</div>`;
-            }
-            grid.innerHTML = html;
-        }
-    })();
 
 
 </script>

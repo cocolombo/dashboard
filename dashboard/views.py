@@ -4,6 +4,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.text import slugify
 from .models import Page, Widget, Link
+import psutil
 
 def index(request, slug=None):
     """
@@ -331,4 +332,19 @@ def edit_link(request, pk):
 
 
 
+def system_monitor(request):
+    # Récupération des infos (CPU, RAM, Disque)
+    cpu = psutil.cpu_percent(interval=None) # Usage CPU instantané
+    ram = psutil.virtual_memory()
+    disk = psutil.disk_usage('/') # Racine du système
+
+    context = {
+        'cpu_usage': cpu,
+        'ram_percent': ram.percent,
+        'ram_used_gb': round(ram.used / (1024**3), 1), # Conversion en Go
+        'ram_total_gb': round(ram.total / (1024**3), 1),
+        'disk_percent': disk.percent,
+        'disk_free_gb': round(disk.free / (1024**3), 0),
+    }
+    return render(request, 'partials/system_monitor.html', context)
 

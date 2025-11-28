@@ -1,0 +1,32 @@
+<div class="space-y-4">
+    <div>
+        <div class="flex justify-between mb-1">
+            <span class="text-xs font-bold text-blue-400">CPU</span>
+            <span class="text-xs text-white">{{ cpu_usage }}%</span>
+        </div>
+        <div class="w-full bg-gray-700 rounded-full h-2">
+            <div class="bg-blue-500 h-2 rounded-full transition-all duration-500 ease-out" style="width: {{ cpu_usage }}%"></div>
+        </div>
+    </div>
+
+    <div>
+        <div class="flex justify-between mb-1">
+            <span class="text-xs font-bold text-purple-400">RAM</span>
+            <span class="text-xs text-white">{{ ram_percent }}% <span class="text-gray-500">({{ ram_used_gb }}/{{ ram_total_gb }} Go)</span></span>
+        </div>
+        <div class="w-full bg-gray-700 rounded-full h-2">
+            <div class="bg-purple-500 h-2 rounded-full transition-all duration-500 ease-out" style="width: {{ ram_percent }}%"></div>
+        </div>
+    </div>
+
+    <div>
+        <div class="flex justify-between mb-1">
+            <span class="text-xs font-bold text-green-400">SSD (/)</span>
+            <span class="text-xs text-white">{{ disk_percent }}% <span class="text-gray-500">({{ disk_free_gb }} Go libres)</span></span>
+        </div>
+        <div class="w-full bg-gray-700 rounded-full h-2">
+            <div class="bg-green-500 h-2 rounded-full transition-all duration-500 ease-out" style="width: {{ disk_percent }}%"></div>
+        </div>
+    </div>
+</div>
+

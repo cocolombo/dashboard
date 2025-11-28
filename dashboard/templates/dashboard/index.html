@@ -152,6 +152,21 @@
                 <div id="date-display" class="text-gray-400 text-lg mt-2 capitalize">Chargement...</div>
             </div>
 
+            <!-- Widget Syetem monitor -->
+
+            <div class="col-span-1 md:col-span-1 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-48 flex flex-col justify-center"
+                 hx-get="{% url 'system_monitor' %}"
+                 hx-trigger="load, every 5s">
+
+                <div class="text-center text-gray-500 text-xs animate-pulse">
+                    Chargement sys...
+                </div>
+            </div>
+
+
+
+
+
             <!-- Widget Marchés Financiers (TradingView) -->
             <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-96">
                 <h3 class="font-bold text-orange-400 mb-4 text-lg">Marchés Financiers</h3>
@@ -188,6 +203,9 @@
                 </div>
             </div>
 
+
+
+
      <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-96 flex flex-col">
                 <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
                     <h3 id="cal-month-year" class="font-bold text-orange-400 text-lg capitalize">--</h3>
@@ -205,8 +223,10 @@
                 </div>
 
                 <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-sm flex-1 content-start">
-                    </div>
-            </div>
+                </div>
+     </div>
+
+
 
 
 
@@ -718,27 +738,24 @@
     })();
 
 
-// --- OUVRIR TOUS LES LIENS ---
-    function openAllLinks(widgetId) {
-        // 1. Trouver le conteneur du widget
+function openAllLinks(widgetId) {
         const widgetContainer = document.querySelector(`div[data-id="${widgetId}"]`);
         if (!widgetContainer) return;
 
-        // 2. Trouver tous les liens <a> à l'intérieur
-        // On cible spécifiquement les liens dans la liste triable pour éviter d'ouvrir des boutons d'admin
         const links = widgetContainer.querySelectorAll('ul.sortable-list a');
 
-        // 3. Confirmation si beaucoup de liens (Sécurité anti-crash)
         if (links.length > 5) {
-            if (!confirm(`Voulez-vous vraiment ouvrir ${links.length} onglets d'un coup ?`)) {
-                return;
-            }
+            if (!confirm(`Voulez-vous ouvrir ${links.length} onglets ?`)) return;
         }
 
-        // 4. Ouvrir chaque lien
-        links.forEach(link => {
+        // On transforme la liste en tableau pour utiliser l'index
+        Array.from(links).forEach((link, index) => {
             if (link.href) {
-                window.open(link.href, '_blank');
+                // Astuce : On attend 150ms * index avant d'ouvrir
+                // Le 1er s'ouvre à 0ms, le 2ème à 150ms, le 3ème à 300ms...
+                setTimeout(() => {
+                    window.open(link.href, '_blank');
+                }, 150 * index);
             }
         });
     }

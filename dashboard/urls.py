@@ -12,6 +12,9 @@ urlpatterns = [
     path('widget/add/<int:page_id>/', views.add_widget, name='add_widget'),
     path('widget/<int:pk>/rename/', views.rename_widget, name='rename_widget'),
     path('link/<int:pk>/edit/', views.edit_link, name='edit_link'),
+    path('api/system-monitor/', views.system_monitor, name='system_monitor'),
+
+
 
     # --- API (Pour le Javascript) ---
     path('api/update-order/', views.update_link_order, name='update_order'),

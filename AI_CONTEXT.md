@@ -1,6 +1,42 @@
-### Mes modèles
+Voici le contexte de mon projet actuel.
 
-from django.db import models
+Contexte Technique du Projet Dashboard
+
+1. Stack Technique
+
+    Backend : Python 3.12, Django 5.2.
+    Frontend : HTML5, Tailwind CSS (Local), HTMX (AJAX), SortableJS.
+    Base de données : SQLite.
+    Système : psutil pour le monitoring serveur.
+    Design : Dark Mode par défaut.
+
+2. Models (dashboard/models.py)
+
+Structure hiérarchique : Page > Widget > Link.
+
+Class Page: name, slug, order Class Widget: title, page(FK), order Class Link: title, url, icon_url, widget(FK), order
+
+3. URLs (dashboard/urls.py)
+
+Inclut les routes classiques (CRUD) et les APIs HTMX.
+    path('', views.index, name='index_root')
+    path('page/<slug:slug>/', views.index, name='index')
+    path('page/create/', views.create_page, name='create_page')
+    path('page/rename/<int:page_id>/', views.rename_page, name='rename_page')
+    path('page/delete/<int:page_id>/', views.delete_page, name='delete_page')
+    path('widget/add/<int:page_id>/', views.add_widget, name='add_widget')
+    path('widget/delete/<int:widget_id>/', views.delete_widget, name='delete_widget')
+    path('widget/move/<int:widget_id>/', views.move_widget_to_page, name='move_widget')
+    path('widget/<int:pk>/rename/', views.rename_widget, name='rename_widget')
+    path('link/add/<int:widget_id>/', views.add_link, name='add_link')
+    path('link/delete/<int:link_id>/', views.delete_link, name='delete_link')
+    path('link/<int:pk>/edit/', views.edit_link, name='edit_link')
+    path('api/update-order/', views.update_link_order, name='update_order')
+    path('api/update-widget-order/', views.update_widget_order, name='update_widget_order')
+    path('api/move-link/<int:link_id>/', views.move_link_to_page, name='move_link')
+    path('api/system-monitor/', views.system_monitor, name='system_monitor')
+
+4. Les modèles
 
 class Page(models.Model):
     name = models.CharField(max_length=100)
@@ -10,9 +46,6 @@ class Page(models.Model):
     class Meta:
         ordering = ['order']
 
-    def __str__(self):
-        return self.name
-
 class Widget(models.Model):
     title = models.CharField(max_length=100)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='widgets')
@@ -20,9 +53,6 @@ class Widget(models.Model):
 
     class Meta:
         ordering = ['order']
-    
-    def __str__(self):
-        return self.title
 
 class Link(models.Model):
     title = models.CharField(max_length=200)
@@ -34,47 +64,17 @@ class Link(models.Model):
     class Meta:
         ordering = ['order']
 
-    def __str__(self):
-        return self.title
 
+5. Règles UI & Frontend
 
-### Les routes
-from django.urls import path
-from . import views
+    Templates : Un seul template principal index.html situé dans startme/templates/dashboard/.
+    Partials : Les fragments HTML pour HTMX sont dans startme/templates/partials/.
 
-urlpatterns = [
-    # Navigation principale
-    path('', views.index, name='index_root'),
-    path('page/create/', views.create_page, name='create_page'),
-    path('page/rename/<int:page_id>/', views.rename_page, name='rename_page'),
-    path('page/delete/<int:page_id>/', views.delete_page, name='delete_page'),
-    path('widget/move/<int:widget_id>/', views.move_widget_to_page, name='move_widget'),
-    path('widget/delete/<int:widget_id>/', views.delete_widget, name='delete_widget'),
-    path('widget/add/<int:page_id>/', views.add_widget, name='add_widget'),
-    path('widget/<int:pk>/rename/', views.rename_widget, name='rename_widget'),
-    path('link/<int:pk>/edit/', views.edit_link, name='edit_link'),
+    Interactions :
 
-
-
-    # --- API (Pour le Javascript) ---
-    path('api/update-order/', views.update_link_order, name='update_order'),
-    path('api/move-link/<int:link_id>/', views.move_link_to_page, name='move_link'),
-
-    # --- Actions manuelles (Boutons) ---
-    # 1. Route pour ajouter un lien dans un widget spécifique
-    path('link/add/<int:widget_id>/', views.add_link, name='add_link'),
-
-    # 2. Route pour supprimer un lien spécifique
-    path('link/delete/<int:link_id>/', views.delete_link, name='delete_link'),
-    path('api/update-widget-order/', views.update_widget_order, name='update_widget_order'),
-
-    path('page/<slug:slug>/', views.index, name='index'),
-
-]
-
-### Les règles UI
-Tailwind, HTMX, Dark mode
-
-
-État actuel : Le drag & drop et l'édition inline fonctionnent. Je veux maintenant travailler sur..."
-
+        Drag & Drop : SortableJS, sauvegarde via API fetch.
+        Édition : Inline via HTMX (hx-swap="outerHTML").
+        Mode Zen : Bouton JS pur + classe CSS .zen-mode.
+        Widgets Spéciaux : Météo (API JS), Calendrier (JS Frontend), Bourse (Iframe), Système (HTMX Polling 5s).
+        
+        

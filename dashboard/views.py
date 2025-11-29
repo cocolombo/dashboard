@@ -330,8 +330,6 @@ def edit_link(request, pk):
 
     return render(request, 'partials/link_form.html', {'link': link})
 
-
-
 def system_monitor(request):
     # Récupération des infos (CPU, RAM, Disque)
     cpu = psutil.cpu_percent(interval=None) # Usage CPU instantané

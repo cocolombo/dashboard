@@ -1,22 +1,28 @@
-
-<li class="bg-gray-800 p-2 rounded border border-blue-500 block">
+<li id="link-{{ link.id }}" class="p-2 bg-gray-700/50 rounded mb-1 border border-blue-500">
     <form hx-post="{% url 'edit_link' link.id %}" 
-          hx-target="closest li" 
+          hx-target="#link-{{ link.id }}" 
           hx-swap="outerHTML"
-          class="flex flex-col gap-2"> {% csrf_token %}
+          class="flex flex-col gap-2">
+        {% csrf_token %}
         
-        <input type="text" name="title" value="{{ link.title }}" 
-               class="bg-gray-900 text-white text-sm px-2 py-1 rounded border border-gray-600 w-full focus:outline-none focus:border-blue-400 font-bold"
-               placeholder="Titre du lien">
-
-        <div class="flex gap-2 items-center">
-            <input type="url" name="url" value="{{ link.url }}" 
-                   class="bg-gray-900 text-blue-300 text-xs px-2 py-1 rounded border border-gray-600 flex-1 focus:outline-none focus:border-blue-400 font-mono"
-                   placeholder="https://..."
-                   autofocus onfocus="this.select()">
-
-            <button type="submit" class="text-green-500 hover:text-green-400 bg-gray-700 hover:bg-gray-600 rounded px-2 py-1 transition-colors" title="Sauvegarder">✓</button>
-            <button hx-get="{% url 'edit_link' link.id %}" hx-target="closest li" hx-swap="outerHTML" class="text-red-400 hover:text-white bg-gray-700 hover:bg-gray-600 rounded px-2 py-1 transition-colors" title="Annuler">✕</button>
+        <input type="text" name="title" value="{{ link.title }}" required
+               class="w-full bg-gray-900 text-white text-sm px-2 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none"
+               placeholder="Titre">
+        
+        <input type="url" name="url" value="{{ link.url }}" required
+               class="w-full bg-gray-900 text-gray-400 text-xs px-2 py-1 rounded border border-gray-600 focus:border-blue-500 focus:outline-none font-mono"
+               placeholder="https://...">
+        
+        <div class="flex justify-end space-x-2">
+            <button type="button" 
+                    onclick="location.reload()" 
+                    class="text-xs text-gray-400 hover:text-white px-2 py-1">
+                Annuler
+            </button>
+            
+            <button type="submit" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded font-bold">
+                OK
+            </button>
         </div>
     </form>
 </li>

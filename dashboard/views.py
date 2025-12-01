@@ -5,6 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.text import slugify
 from .models import Page, Widget, Link
 import psutil
+import subprocess
+import os
 
 def index(request, slug=None):
     """
@@ -54,7 +56,6 @@ def update_link_order(request):
     """
     # 1. On récupère l'ID du widget dans lequel le lien a atterri
     widget_id = request.POST.get('widget_id')
-
     # 2. On récupère la liste des liens dans leur nouvel ordre
     link_ids = request.POST.getlist('link')
 
@@ -278,21 +279,38 @@ def move_widget_to_page(request, widget_id):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-# dashboard/views.py
-
 def delete_widget(request, widget_id):
+    """
+    Supprime un widget (catégorie) et tous les liens ou notes qu'il contient.
+
+    Args:
+        request (HttpRequest): L'objet de requête.
+        widget_id (int): L'ID du widget à supprimer.
+
+    Returns:
+        HttpResponseRedirect: Redirige vers la page précédente.
+    """
     widget = get_object_or_404(Widget, id=widget_id)
     widget.delete()
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
-# dashboard/views.py
-
 @require_POST
 def add_widget(request, page_id):
+    """
+    Ajoute une nouvelle catégorie (Widget) sur une page spécifique.
+
+    Prend en compte le type de widget sélectionné (Liste ou Bloc-notes).
+
+    Args:
+        request (HttpRequest): Requête POST contenant 'title' et 'widget_type'.
+        page_id (int): L'ID de la page parente.
+
+    Returns:
+        HttpResponseRedirect: Redirige vers la page active (index).
+    """
     page = get_object_or_404(Page, id=page_id)
     title = request.POST.get('title')
-
     # C'est la ligne magique qui manquait :
     # On récupère le choix fait dans la modale (ou 'list' par défaut)
     w_type = request.POST.get('widget_type', 'list')
@@ -309,6 +327,20 @@ def add_widget(request, page_id):
 
 
 def rename_widget(request, pk):
+    """
+    Gère l'affichage et la mise à jour du titre d'un widget (Mode édition In-Line).
+
+    Utilisé par HTMX.
+    - GET : Renvoie le formulaire d'édition du titre.
+    - POST : Met à jour le titre et renvoie le titre affiché (HTML).
+
+    Args:
+        request (HttpRequest): L'objet de requête.
+        pk (int): La clé primaire (ID) du widget.
+
+    Returns:
+        HttpResponse: Le fragment HTML (Partial) correspondant à l'état (formulaire ou titre).
+    """
     widget = get_object_or_404(Widget, pk=pk)
 
     # 1. Si on reçoit du POST, c'est que l'utilisateur a validé le formulaire
@@ -325,22 +357,47 @@ def rename_widget(request, pk):
     return render(request, 'partials/widget_title_form.html', {'widget': widget})
 
 
-# views.py
 def edit_link(request, pk):
+    """
+    Gère l'édition d'un lien (Titre et URL) en mode 'In-Place'.
+
+    Utilisé par HTMX.
+    - GET : Renvoie le formulaire d'édition à la place du lien.
+    - POST : Sauvegarde les modifications et renvoie l'élément lien standard.
+
+    Args:
+        request (HttpRequest): L'objet de requête.
+        pk (int): La clé primaire (ID) du lien.
+
+    Returns:
+        HttpResponse: Le fragment HTML (Partial) mis à jour.
+    """
     link = get_object_or_404(Link, pk=pk)
 
     if request.method == "POST":
+        # Sauvegarde
         link.title = request.POST.get('title')
         link.url = request.POST.get('url')
-        # On peut aussi relancer la récupération du favicon si l'URL change
         link.save()
+        # On renvoie l'item normal mis à jour
         return render(request, 'partials/link_item.html', {'link': link})
 
+    # Si GET, on renvoie le formulaire d'édition
     return render(request, 'partials/link_form.html', {'link': link})
 
 def system_monitor(request):
-    # Récupération des infos (CPU, RAM, Disque)
-    cpu = psutil.cpu_percent(interval=None) # Usage CPU instantané
+    """
+    Récupère les métriques du système (CPU, RAM, Disque) pour le widget de monitoring.
+
+    Cette vue est appelée périodiquement par HTMX (Polling).
+
+    Args:
+        request (HttpRequest): L'objet de requête.
+
+    Returns:
+        HttpResponse: Le fragment HTML (Partial) avec les jauges et valeurs mises à jour.
+    """
+    cpu = psutil.cpu_percent(interval=None)
     ram = psutil.virtual_memory()
     disk = psutil.disk_usage('/') # Racine du système
 
@@ -354,8 +411,21 @@ def system_monitor(request):
     }
     return render(request, 'partials/system_monitor.html', context)
 
+
 @require_POST
 def save_note_content(request, widget_id):
+    """
+    Sauvegarde automatiquement le contenu textuel d'un widget 'Bloc-notes'.
+
+    Déclenché par HTMX lors de la frappe ou de la perte de focus.
+
+    Args:
+        request (HttpRequest): Requête POST contenant 'content'.
+        widget_id (int): L'ID du widget.
+
+    Returns:
+        HttpResponse: Statut 200 OK (pas de rendu HTML nécessaire).
+    """
     widget = get_object_or_404(Widget, id=widget_id)
     # On récupère le contenu envoyé par le champ texte
     new_content = request.POST.get('content', '')
@@ -365,3 +435,34 @@ def save_note_content(request, widget_id):
     return HttpResponse(status=200)
 
 
+def open_local_file(request, link_id):
+    """
+    Ouvre un fichier ou dossier local sur le serveur (l'ordinateur de l'utilisateur).
+
+    Utilise la commande système `xdg-open` pour contourner les restrictions de sécurité
+    des navigateurs concernant les liens `file://`.
+
+    Args:
+        request (HttpRequest): L'objet de requête.
+        link_id (int): L'ID du lien contenant le chemin local.
+
+    Returns:
+        HttpResponse:
+            - 204 (No Content) si succès (l'action est faite côté système).
+            - 404 si le fichier n'existe pas sur le disque.
+    """
+    link = get_object_or_404(Link, id=link_id)
+    path = link.url.strip()
+
+    # Nettoyage si l'utilisateur a copié "file://"
+    if path.startswith('file://'):
+        path = path[7:]
+
+    if os.path.exists(path):
+        # xdg-open est la commande magique d'Ubuntu pour ouvrir n'importe quoi
+        # avec le programme par défaut
+        subprocess.Popen(['xdg-open', path], start_new_session=True)
+        return HttpResponse(status=204) # 204 = Succès, ne fais rien sur la page
+    else:
+        print(f"Erreur: Fichier introuvable -> {path}")
+        return HttpResponse(status=404)

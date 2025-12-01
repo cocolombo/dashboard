@@ -14,7 +14,7 @@ urlpatterns = [
     path('link/<int:pk>/edit/', views.edit_link, name='edit_link'),
     path('api/system-monitor/', views.system_monitor, name='system_monitor'),
     path('widget/<int:widget_id>/save_note/', views.save_note_content, name='save_note'),
-
+    path('link/open-local/<int:link_id>/', views.open_local_file, name='open_local_file'),
 
     # --- API (Pour le Javascript) ---
     path('api/update-order/', views.update_link_order, name='update_order'),

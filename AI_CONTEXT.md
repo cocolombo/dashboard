@@ -28,6 +28,7 @@ Inclut les routes classiques (CRUD) et les APIs HTMX.
     path('widget/delete/<int:widget_id>/', views.delete_widget, name='delete_widget')
     path('widget/move/<int:widget_id>/', views.move_widget_to_page, name='move_widget')
     path('widget/<int:pk>/rename/', views.rename_widget, name='rename_widget')
+    path('widget/<int:widget_id>/toggle/', views.toggle_widget_collapse, name='toggle_widget_collapse'),
     path('link/add/<int:widget_id>/', views.add_link, name='add_link')
     path('link/delete/<int:link_id>/', views.delete_link, name='delete_link')
     path('link/<int:pk>/edit/', views.edit_link, name='edit_link')
@@ -50,6 +51,7 @@ class Widget(models.Model):
     title = models.CharField(max_length=100)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='widgets')
     order = models.IntegerField(default=0)
+    is_collapsed = models.BooleanField(default=False) 
 
     class Meta:
         ordering = ['order']

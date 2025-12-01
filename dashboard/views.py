@@ -293,12 +293,20 @@ def add_widget(request, page_id):
     page = get_object_or_404(Page, id=page_id)
     title = request.POST.get('title')
 
-    if title:
-        # On crée le widget à la fin de la liste
-        Widget.objects.create(title=title, page=page, order=999)
+    # C'est la ligne magique qui manquait :
+    # On récupère le choix fait dans la modale (ou 'list' par défaut)
+    w_type = request.POST.get('widget_type', 'list')
 
-    # On recharge la page courante
+    if title:
+        Widget.objects.create(
+            title=title,
+            page=page,
+            order=999,
+            widget_type=w_type  # On enregistre le type en base de données
+        )
+
     return redirect('index', slug=page.slug)
+
 
 def rename_widget(request, pk):
     widget = get_object_or_404(Widget, pk=pk)
@@ -345,4 +353,15 @@ def system_monitor(request):
         'disk_free_gb': round(disk.free / (1024**3), 0),
     }
     return render(request, 'partials/system_monitor.html', context)
+
+@require_POST
+def save_note_content(request, widget_id):
+    widget = get_object_or_404(Widget, id=widget_id)
+    # On récupère le contenu envoyé par le champ texte
+    new_content = request.POST.get('content', '')
+    widget.content = new_content
+    widget.save()
+    # On ne renvoie rien (ou un petit statut 200 OK), HTMX n'a pas besoin de redessiner
+    return HttpResponse(status=200)
+
 

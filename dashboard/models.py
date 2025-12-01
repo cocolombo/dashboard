@@ -15,10 +15,21 @@ class Page(models.Model):
     def __str__(self):
         return self.name
 
+
 class Widget(models.Model):
+    # Choix du type de widget
+    TYPE_CHOICES = [
+        ('list', 'Liste de liens'),
+        ('note', 'Bloc-notes'),
+    ]
+
     title = models.CharField(max_length=100)
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name='widgets')
     order = models.IntegerField(default=0)
+
+    # Nouveaux champs
+    widget_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='list')
+    content = models.TextField(blank=True, null=True)  # Pour stocker le texte de la note
 
     class Meta:
         ordering = ['order']

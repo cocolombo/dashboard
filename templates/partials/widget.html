@@ -1,4 +1,4 @@
-<div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 flex flex-col group/widget mb-6 transition-all duration-300"
+<div class="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 flex flex-col group/widget mb-6 transition-all duration-300 h-full"
      id="widget-{{ widget.id }}"
      data-id="{{ widget.id }}">
 
@@ -7,9 +7,12 @@
         {% include "partials/widget_title.html" %}
 
         <div class="flex items-center space-x-1">
+
+            {% if widget.widget_type == 'list' %}
             <button onclick="openAllLinks('{{ widget.id }}')"
                     class="text-gray-500 hover:text-purple-400 font-bold text-lg px-2 transition-colors cursor-pointer"
                     title="Ouvrir tous les liens">⇱</button>
+            {% endif %}
 
             <button onclick="showWidgetMenu(event, '{{ widget.id }}')"
                     class="text-gray-500 hover:text-blue-400 font-bold text-lg px-2 transition-colors cursor-pointer"
@@ -19,25 +22,58 @@
                     class="text-gray-500 hover:text-red-500 font-bold text-lg px-2 transition-colors cursor-pointer"
                     title="Supprimer">🗑</button>
 
+            {% if widget.widget_type == 'list' or not widget.widget_type %}
             <button onclick="toggleForm('form-{{ widget.id }}')"
                     class="text-gray-500 hover:text-green-400 font-bold text-2xl leading-none px-2 transition-colors cursor-pointer"
                     title="Ajouter">+</button>
+            {% endif %}
         </div>
     </div>
 
-    <div class="widget-content">
+    <div class="widget-content flex-1 flex flex-col">
 
-        <form id="form-{{ widget.id }}" action="{% url 'add_link' widget.id %}" method="POST" class="hidden mb-3 bg-gray-900 p-3 rounded border border-gray-600">
-            {% csrf_token %}
-            <input type="text" name="title" placeholder="Titre" required class="w-full mb-2 bg-gray-800 text-white px-2 py-1 rounded border border-gray-700">
-            <input type="url" name="url" placeholder="URL" required class="w-full mb-2 bg-gray-800 text-white px-2 py-1 rounded border border-gray-700">
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-1 rounded text-sm">Ajouter</button>
-        </form>
+        {% if widget.widget_type == 'list' or not widget.widget_type %}
 
-        <ul class="sortable-list space-y-0 flex-1 min-h-[20px]" data-widget-id="{{ widget.id }}">
-            {% for link in widget.links.all %}
-                {% include "partials/link_item.html" %}
-            {% endfor %}
-        </ul>
+            <form id="form-{{ widget.id }}" action="{% url 'add_link' widget.id %}" method="POST" class="hidden mb-3 bg-gray-900 p-3 rounded border border-gray-600">
+                {% csrf_token %}
+                <input type="text" name="title" placeholder="Titre" required class="w-full mb-2 bg-gray-800 text-white px-2 py-1 rounded border border-gray-700">
+                <input type="url" name="url" placeholder="URL" required class="w-full mb-2 bg-gray-800 text-white px-2 py-1 rounded border border-gray-700">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-1 rounded text-sm">Ajouter</button>
+            </form>
+
+            <ul class="sortable-list space-y-0 flex-1 min-h-[20px]" data-widget-id="{{ widget.id }}">
+                {% for link in widget.links.all %}
+                    {% include "partials/link_item.html" %}
+                {% endfor %}
+            </ul>
+
+        {% elif widget.widget_type == 'note' %}
+
+            <textarea
+                name="content"
+                class="w-full h-64 bg-gray-900 text-gray-300 p-3 rounded border border-gray-700 focus:border-blue-500 focus:outline-none resize-none text-sm font-mono leading-relaxed"
+                placeholder="Écrivez vos notes ici..."
+                hx-post="{% url 'save_note' widget.id %}"
+                hx-trigger="keyup changed delay:500ms, blur"
+                hx-swap="none"
+            >{{ widget.content|default_if_none:"" }}</textarea>
+
+            <div class="text-right mt-1 h-4">
+                <span id="save-status-{{ widget.id }}" class="text-xs text-gray-600 italic transition-opacity duration-500 opacity-0">Sauvegardé</span>
+            </div>
+
+            <script>
+                document.body.addEventListener('htmx:afterRequest', function(evt) {
+                    if(evt.detail.elt.name === 'content' && evt.detail.elt.closest('#widget-{{ widget.id }}')) {
+                        let status = document.getElementById('save-status-{{ widget.id }}');
+                        status.classList.remove('opacity-0');
+                        setTimeout(() => status.classList.add('opacity-0'), 2000);
+                    }
+                });
+            </script>
+
+        {% endif %}
+
     </div>
+
 </div>

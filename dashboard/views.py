@@ -466,3 +466,22 @@ def open_local_file(request, link_id):
     else:
         print(f"Erreur: Fichier introuvable -> {path}")
         return HttpResponse(status=404)
+
+
+@csrf_exempt
+@require_POST
+def update_page_order(request):
+    """
+    API pour réorganiser les pages (onglets) via Drag & Drop.
+    """
+    page_ids = request.POST.getlist('page')
+
+    for index, page_id in enumerate(page_ids):
+        try:
+            page = get_object_or_404(Page, id=page_id)
+            page.order = index
+            page.save()
+        except:
+            continue
+
+    return HttpResponse(status=200)

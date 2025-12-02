@@ -45,12 +45,13 @@
     <div class="font-bold text-xl mr-4 text-white">≡ Pages</div>
 
     {% for page in pages %}
-        <a href="{% url 'index' page.slug %}"
-           class="px-4 py-2 rounded transition-colors duration-200 whitespace-nowrap
-           {% if page == active_page %}bg-blue-600 text-white font-bold shadow-md{% else %}bg-gray-800 hover:bg-gray-700 text-gray-300{% endif %}">
-            {{ page.name }}
-        </a>
-    {% endfor %}
+            <a href="{% url 'index' page.slug %}"
+               data-id="{{ page.id }}"
+               class="px-4 py-2 rounded transition-colors duration-200 whitespace-nowrap cursor-move
+               {% if page == active_page %}bg-blue-600 text-white font-bold shadow-md{% else %}bg-gray-800 hover:bg-gray-700 text-gray-300{% endif %}">
+                {{ page.name }}
+            </a>
+        {% endfor %}
 
     <button onclick="toggleModal('modal-add-page')"
             class="px-3 py-2 rounded bg-gray-800 hover:bg-green-600 text-gray-400 hover:text-white font-bold transition-colors"
@@ -733,7 +734,27 @@ function openAllLinks(widgetId) {
         });
     }
 
+// --- DRAG & DROP : PAGES (Onglets) ---
+    var navContainer = document.getElementById('main-nav');
+    if (navContainer) {
+        new Sortable(navContainer, {
+            animation: 150,
+            draggable: 'a', // On ne déplace que les liens (pas les boutons + / edit)
+            ghostClass: 'bg-gray-600',
+            onEnd: function (evt) {
+                var itemEl = evt.item;
+                // On récupère tous les liens <a> qui ont un data-id
+                // (pour ignorer les boutons d'actions statiques)
+                var listItems = navContainer.querySelectorAll('a[data-id]');
+                var pageIds = Array.from(listItems).map(el => el.getAttribute('data-id'));
 
+                var formData = new FormData();
+                pageIds.forEach(id => formData.append('page', id));
+
+                fetch('/api/update-page-order/', { method: 'POST', body: formData });
+            }
+        });
+    }
 </script>
 
 </body>

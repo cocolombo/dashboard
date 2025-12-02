@@ -1,52 +1,37 @@
-<li id="link-{{ link.id }}" data-id="{{ link.id }}" class="bg-gray-700 hover:bg-gray-600 rounded p-2 mb-1 flex justify-between items-center group transition-colors select-none">
+<li id="link-{{ link.id }}" data-id="{{ link.id }}" class="bg-gray-700 hover:bg-gray-600 rounded py-0.5 px-2 mb-0.5 flex justify-between items-center group transition-colors select-none">
     
     {% if "http" in link.url %}
         <a href="{{ link.url }}" target="_blank" class="flex items-center flex-1 min-w-0 mr-2 cursor-pointer">
             {% if link.icon_url %}
-                <img src="{{ link.icon_url }}" class="w-4 h-4 mr-2" alt="icon" onerror="this.style.display='none'">
+                <img src="{{ link.icon_url }}" class="w-3 h-3 mr-2" alt="icon" onerror="this.style.display='none'">
             {% else %}
-                <img src="https://www.google.com/s2/favicons?domain={{ link.url }}" class="w-4 h-4 mr-2 opacity-70" alt="icon">
+                <img src="https://www.google.com/s2/favicons?domain={{ link.url }}" class="w-3 h-3 mr-2 opacity-70" alt="icon">
             {% endif %}
-            <span class="truncate text-gray-200 text-sm font-medium hover:text-blue-400 transition-colors">{{ link.title }}</span>
+            <span class="truncate text-gray-200 text-xs font-medium hover:text-blue-400 transition-colors">{{ link.title }}</span>
         </a>
 
     {% else %}
         <div hx-get="{% url 'open_local_file' link.id %}" 
              hx-swap="none"
              class="flex items-center flex-1 min-w-0 mr-2 cursor-pointer group/local">
-            
-            <span class="w-4 h-4 mr-2 flex justify-center items-center text-yellow-500">
+            <span class="w-3 h-3 mr-2 flex justify-center items-center text-yellow-500 text-[10px]">
                 📁
             </span>
-            
-            <span class="truncate text-gray-200 text-sm font-medium group-hover/local:text-green-400 transition-colors">
+            <span class="truncate text-gray-200 text-xs font-medium group-hover/local:text-green-400 transition-colors">
                 {{ link.title }}
             </span>
         </div>
     {% endif %}
-    
-    <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        
-        <button hx-get="{% url 'edit_link' link.id %}"
-                hx-target="#link-{{ link.id }}"
-                hx-swap="outerHTML"
-                class="text-gray-400 hover:text-yellow-400 p-1"
-                title="Modifier">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-        </button>
 
-        <button onclick="showContextMenu(event, '{{ link.id }}')" class="text-gray-400 hover:text-blue-400 p-1 cursor-context-menu" title="Déplacer">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
+    <div class="flex items-center space-x-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button hx-get="{% url 'edit_link' link.id %}" hx-target="#link-{{ link.id }}" hx-swap="outerHTML" class="text-gray-400 hover:text-yellow-400 p-0.5" title="Modifier">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
         </button>
-
-        <button onclick="confirmDeleteLink('{{ link.id }}')" class="text-gray-400 hover:text-red-500 p-1" title="Supprimer">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+        <button onclick="showContextMenu(event, '{{ link.id }}')" class="text-gray-400 hover:text-blue-400 p-0.5 cursor-context-menu" title="Déplacer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+        </button>
+        <button onclick="confirmDeleteLink('{{ link.id }}')" class="text-gray-400 hover:text-red-500 p-0.5" title="Supprimer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
     </div>
 </li>

@@ -385,9 +385,29 @@ def edit_link(request, pk):
     # Si GET, on renvoie le formulaire d'édition
     return render(request, 'partials/link_form.html', {'link': link})
 
+
+# dashboard/views.py
+
+def get_gpu_stats():
+    """Récupère VRAM et Température via nvidia-smi sans librairie tierce."""
+    try:
+        # On demande : température, mémoire utilisée, mémoire totale
+        cmd = "nvidia-smi --query-gpu=temperature.gpu,memory.used,memory.total --format=csv,noheader,nounits"
+        output = subprocess.check_output(cmd.split(), encoding='utf-8')
+        temp, used, total = map(int, output.strip().split(', '))
+        return {
+            'temp': temp,
+            'used': used,
+            'total': total,
+            'percent': round((used / total) * 100, 1)
+        }
+    except Exception:
+        return None  # Pas de GPU Nvidia ou erreur driver
+
+
 def system_monitor(request):
     """
-    Récupère les métriques du système (CPU, RAM, Disque) pour le widget de monitoring.
+    Récupère les métriques du système (CPU, GPU, RAM, Disque) pour le widget de monitoring.
 
     Cette vue est appelée périodiquement par HTMX (Polling).
 
@@ -397,19 +417,49 @@ def system_monitor(request):
     Returns:
         HttpResponse: Le fragment HTML (Partial) avec les jauges et valeurs mises à jour.
     """
+    # 1. CPU & RAM (Existant)
     cpu = psutil.cpu_percent(interval=None)
     ram = psutil.virtual_memory()
-    disk = psutil.disk_usage('/') # Racine du système
+
+    # 2. DISQUES (CONFIGURATION À ADAPTER ICI)
+    # Remplacez les chemins par VOS points de montage (ceux trouvés avec df -h)
+    disks_to_check = [
+        {'name': 'Système', 'path': '/'},
+        {'name': 'Data 3TB', 'path': '/media/nimzo/3tb'},  # <--- Mettez votre chemin ici
+        {'name': 'Fast 120GB', 'path': '/media/120gb'},  # <--- Mettez votre chemin ici
+    ]
+
+    disks_info = []
+    for d in disks_to_check:
+        try:
+            usage = psutil.disk_usage(d['path'])
+            disks_info.append({
+                'name': d['name'],
+                'percent': usage.percent,
+                'free_gb': round(usage.free / (1024 ** 3), 0),
+                'total_gb': round(usage.total / (1024 ** 3), 0)
+            })
+        except FileNotFoundError:
+            # Si le disque n'est pas monté, on l'ignore ou on met 0
+            continue
+
+    # 3. GPU
+    gpu = get_gpu_stats()
 
     context = {
         'cpu_usage': cpu,
         'ram_percent': ram.percent,
-        'ram_used_gb': round(ram.used / (1024**3), 1), # Conversion en Go
-        'ram_total_gb': round(ram.total / (1024**3), 1),
-        'disk_percent': disk.percent,
-        'disk_free_gb': round(disk.free / (1024**3), 0),
+        'ram_used_gb': round(ram.used / (1024 ** 3), 1),
+        'ram_total_gb': round(ram.total / (1024 ** 3), 1),
+        'disks': disks_info,  # On envoie la liste des disques
+        'gpu': gpu,
     }
     return render(request, 'partials/system_monitor.html', context)
+
+
+
+
+
 
 
 @require_POST

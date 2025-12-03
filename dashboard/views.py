@@ -8,6 +8,14 @@ import psutil
 import subprocess
 import os
 
+import zipfile
+import io
+from datetime import datetime
+from django.conf import settings
+from django.http import FileResponse
+
+
+
 def index(request, slug=None):
     """
     Affiche la page principale du tableau de bord (Dashboard).
@@ -152,12 +160,16 @@ def add_link(request, widget_id):
     title = request.POST.get('title')
     url = request.POST.get('url')
 
-    # On crée le lien à la fin de la liste (order=999 pour être sûr qu'il est dernier)
-    if title and url:
+    # MODIFICATION : On vérifie seulement si 'title' existe.
+    if title:
+        # Si l'URL est vide, on s'assure que c'est bien None ou une chaîne vide
         Link.objects.create(title=title, url=url, widget=widget, order=999)
 
-    # On recharge la page précédente
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+
+
 
 
 def delete_link(request, link_id):
@@ -535,3 +547,51 @@ def update_page_order(request):
             continue
 
     return HttpResponse(status=200)
+
+
+def download_backup(request):
+    """
+    Crée une archive ZIP du projet complet (en excluant les dossiers lourds/inutiles)
+    et la renvoie au navigateur pour téléchargement immédiat.
+    """
+    # 1. Préparation du fichier en mémoire (pas d'écriture sur le disque du serveur)
+    buffer = io.BytesIO()
+
+    # 2. Nom du fichier avec la date (ex: backup_startme_2025-12-02_14h30.zip)
+    timestamp = datetime.now().strftime('%Y-%m-%d_%Hh%M')
+    filename = f"backup_startme_{timestamp}.zip"
+
+    # 3. Dossiers à ignorer absolument
+    # .venv / venv : L'environnement virtuel (très lourd et recréable)
+    # .git : L'historique de version (lourd et déjà sur Github)
+    # __pycache__ : Fichiers compilés python inutiles
+    # .idea : Configuration PyCharm (optionnel, souvent perso)
+    EXCLUDE_DIRS = {'.venv', 'venv', '.git', '__pycache__', '.idea'}
+
+    # 4. Création du ZIP
+    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        # On parcourt tout le dossier du projet (BASE_DIR)
+        for root, dirs, files in os.walk(settings.BASE_DIR):
+            # Filtrage des dossiers interdits (modification de la liste 'dirs' en place)
+            dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+
+            for file in files:
+                # On ignore aussi les fichiers compilés individuels et la db si elle est verrouillée (optionnel)
+                if file.endswith(('.pyc', '.pyo', '.log')):
+                    continue
+
+                # Chemin complet sur le disque
+                file_path = os.path.join(root, file)
+
+                # Chemin relatif à l'intérieur du ZIP (pour garder la structure)
+                # ex: /home/nimzo/.../startme/manage.py devient startme/manage.py
+                archive_name = os.path.relpath(file_path, settings.BASE_DIR)
+
+                try:
+                    zip_file.write(file_path, archive_name)
+                except PermissionError:
+                    continue  # On saute les fichiers qu'on n'a pas le droit de lire
+
+    # 5. Envoi du fichier
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=filename)

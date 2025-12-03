@@ -1,6 +1,12 @@
 <li id="link-{{ link.id }}" data-id="{{ link.id }}" class="bg-gray-700 hover:bg-gray-600 rounded py-0.5 px-2 mb-0.5 flex justify-between items-center group transition-colors select-none">
-    
-    {% if "http" in link.url %}
+
+    {% if not link.url %}
+        <div class="flex items-center flex-1 min-w-0 mr-2 opacity-60 cursor-default" title="Aucune URL définie">
+            <span class="w-3 h-3 mr-2 flex justify-center items-center text-gray-500 font-bold text-[10px]">?</span>
+            <span class="truncate text-gray-400 text-xs font-medium italic">{{ link.title }}</span>
+        </div>
+
+    {% elif "http" in link.url %}
         <a href="{{ link.url }}" target="_blank" class="flex items-center flex-1 min-w-0 mr-2 cursor-pointer">
             {% if link.icon_url %}
                 <img src="{{ link.icon_url }}" class="w-3 h-3 mr-2" alt="icon" onerror="this.style.display='none'">
@@ -11,12 +17,10 @@
         </a>
 
     {% else %}
-        <div hx-get="{% url 'open_local_file' link.id %}" 
+        <div hx-get="{% url 'open_local_file' link.id %}"
              hx-swap="none"
              class="flex items-center flex-1 min-w-0 mr-2 cursor-pointer group/local">
-            <span class="w-3 h-3 mr-2 flex justify-center items-center text-yellow-500 text-[10px]">
-                📁
-            </span>
+            <span class="w-3 h-3 mr-2 flex justify-center items-center text-yellow-500 text-[10px]">📁</span>
             <span class="truncate text-gray-200 text-xs font-medium group-hover/local:text-green-400 transition-colors">
                 {{ link.title }}
             </span>

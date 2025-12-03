@@ -16,7 +16,7 @@ urlpatterns = [
     path('widget/<int:widget_id>/save_note/', views.save_note_content, name='save_note'),
     path('link/open-local/<int:link_id>/', views.open_local_file, name='open_local_file'),
     path('api/update-page-order/', views.update_page_order, name='update_page_order'),
-
+    path('api/backup/', views.download_backup, name='download_backup'),
 
 
     # --- API (Pour le Javascript) ---

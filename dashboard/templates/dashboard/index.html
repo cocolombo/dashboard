@@ -42,7 +42,7 @@
 <!-- NAVIGATION PRINCIPALE (Pages)      -->
 <!-- =================================== -->
 <nav id="main-nav" class="flex items-center space-x-2 p-3 bg-black border-b border-gray-800 overflow-x-auto">
-    <div class="font-bold text-xl mr-4 text-white">≡ Pages</div>
+    <div class="font-bold text-xl mr-4 text-white">≡</div>
 
     {% for page in pages %}
             <a href="{% url 'index' page.slug %}"
@@ -76,9 +76,9 @@
     {% endif %}
 </nav>
 
-<!-- =================================== -->
-<!-- BARRE DE RECHERCHE + BOUTON AJOUT  -->
-<!-- =================================== -->
+<!-- ======================-->
+<!-- BARRE DE RECHERCHE    -->
+<!-- ======================-->
 <div id="search-container" class="flex justify-center items-center py-8 px-4 gap-4">
     <form action="https://www.google.com/search" method="GET" target="_blank"
           class="w-full max-w-2xl relative group">
@@ -93,6 +93,9 @@
     </form>
 
     {% if active_page %}
+    <!-- ==================-->
+    <!-- BOUTON AJOUT      -->
+    <!-- ==================-->
     <button onclick="toggleModal('modal-add-widget')"
             class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 rounded-full shadow-lg flex items-center font-bold transition-colors whitespace-nowrap"
             title="Ajouter une catégorie à cette page">
@@ -102,18 +105,129 @@
 </div>
 
 <!-- =================================== -->
-<!-- CONTENU PRINCIPAL (Grille widgets) -->
+<!-- CONTENU PRINCIPAL (Grille widgets)  -->
 <!-- =================================== -->
 <div class="p-6 main-content">
     {% if active_page %}
 
         <!-- Grille responsive des widgets -->
         <div id="widget-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
             {% if active_page.slug == 'infos' %}
+            <!-- ==================-->
+            <!-- WIDGET MÉTÉO       -->
+            <!-- ===================-->
+                <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-48 flex flex-col justify-between relative overflow-hidden">
+                    <!-- Contenu météo actuel + prévisions -->
+                    <div class="flex justify-between items-start z-10">
+                        <div>
+                            <h3 class="font-bold text-white text-xl">Météo</h3>
+                            <p class="text-sm text-gray-400 uppercase tracking-wider mt-1">Montréal, QC</p>
+                        </div>
+                        <div class="text-right">
+                            <div id="current-temp" class="text-4xl font-bold text-white">--°</div>
+                            <div id="current-desc" class="text-xs text-gray-400 capitalize">Chargement...</div>
+                        </div>
+                    </div>
 
-            <!-- Widget Météo (Open-Meteo) -->
-            <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-48 flex flex-col justify-between relative overflow-hidden">
+                    <div id="forecast-grid" class="grid grid-cols-3 gap-2 mt-4 z-10">
+                        <!-- Prévisions chargées dynamiquement -->
+                        <div class="text-center animate-pulse">
+                            <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
+                            <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
+                        </div>
+                        <div class="text-center animate-pulse delay-75">
+                            <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
+                            <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
+                        </div>
+                        <div class="text-center animate-pulse delay-150">
+                            <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
+                            <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                    <div class="absolute -left-10 -top-10 w-40 h-40 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+                </div>
+
+                <!-- ==================  -->
+                <!-- WIDGET HROLOGE/DATE -->
+                <!-- =================== -->
+
+                <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex flex-col justify-center items-center">
+                    <h3 class="font-bold text-orange-400 w-full text-left mb-2">Heure Locale</h3>
+                    <div id="clock-display" class="text-4xl font-mono text-blue-400 font-bold tracking-wider">--:--:--</div>
+                    <div id="date-display" class="text-gray-400 text-lg mt-2 capitalize">Chargement...</div>
+                </div>
+
+                <!-- ===================== -->
+                <!-- WIDGET SYSTEM NOBITOR -->
+                <!-- ===================== -->
+                <div class="col-span-1 md:col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-52 flex flex-col justify-center"
+                     hx-get="{% url 'system_monitor' %}"
+                     hx-trigger="load, every 8s">
+
+                    <div class="text-center text-gray-500 text-xs animate-pulse">
+                        Chargement sys...
+                    </div>
+                </div>
+
+                <!-- ======================== -->
+                <!-- WIDGET MARCHÉ FINANCIER  -->
+                <!-- ======================== -->
+                <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-96">
+                    <h3 class="font-bold text-orange-400 mb-4 text-lg">Marchés Financiers</h3>
+                    <div class="tradingview-widget-container">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+                      {
+
+                              "colorTheme": "dark",
+                              "dateRange": "12M",
+                              "showChart": false,
+                              "locale": "fr",
+                              "largeChartUrl": "",
+                              "isTransparent": true,
+                              "showSymbolLogo": true,
+                              "showFloatingTooltip": false,
+                              "width": "100%",
+                              "height": "100%",
+                              "tabs": [
+                                {
+                                  "title": "Indices & Crypto",
+                                  "symbols": [
+                                    { "s": "FOREXCOM:SPXUSD", "d": "S&P 500" },
+                                    { "s": "FOREXCOM:NSXUSD", "d": "Nasdaq 100" },
+                                    { "s": "TSX:TSX", "d": "Toronto TSX" },
+                                    { "s": "BITSTAMP:BTCUSD", "d": "Bitcoin" },
+                                    { "s": "BITSTAMP:ETHUSD", "d": "Ethereum" },
+                                    { "s": "FX_IDC:EURUSD", "d": "EUR / USD" }
+                                  ]
+                                }
+                              ]
+                            }
+                      </script>
+                    </div>
+                </div>
+
+             <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-96 flex flex-col">
+                        <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                            <h3 id="cal-month-year" class="font-bold text-orange-400 text-lg capitalize">--</h3>
+                            <div class="text-xs text-gray-500 bg-gray-900 px-2 py-1 rounded border border-gray-600">Aujourd'hui</div>
+                        </div>
+
+                        <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                            <div class="text-gray-500 text-xs font-bold">L</div>
+                            <div class="text-gray-500 text-xs font-bold">M</div>
+                            <div class="text-gray-500 text-xs font-bold">M</div>
+                            <div class="text-gray-500 text-xs font-bold">J</div>
+                            <div class="text-gray-500 text-xs font-bold">V</div>
+                            <div class="text-gray-500 text-xs font-bold">S</div>
+                            <div class="text-gray-500 text-xs font-bold">D</div>
+                        </div>
+
+                        <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-sm flex-1 content-start">
+                        </div>
+             </div>            <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-48 flex flex-col justify-between relative overflow-hidden">
                 <!-- Contenu météo actuel + prévisions -->
                 <div class="flex justify-between items-start z-10">
                     <div>
@@ -146,15 +260,19 @@
                 <div class="absolute -left-10 -top-10 w-40 h-40 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
             </div>
 
-            <!-- Widget Horloge & Date -->
+            <!-- ==================  -->
+            <!-- WIDGET HROLOGE/DATE -->
+            <!-- =================== -->
+
             <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex flex-col justify-center items-center">
                 <h3 class="font-bold text-orange-400 w-full text-left mb-2">Heure Locale</h3>
                 <div id="clock-display" class="text-4xl font-mono text-blue-400 font-bold tracking-wider">--:--:--</div>
                 <div id="date-display" class="text-gray-400 text-lg mt-2 capitalize">Chargement...</div>
             </div>
 
-            <!-- Widget Syetem monitor -->
-
+            <!-- ===================== -->
+            <!-- WIDGET SYSTEM NOBITOR -->
+            <!-- ===================== -->
             <div class="col-span-1 md:col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-52 flex flex-col justify-center"
                  hx-get="{% url 'system_monitor' %}"
                  hx-trigger="load, every 8s">
@@ -164,18 +282,15 @@
                 </div>
             </div>
 
-
-
-
-
-            <!-- Widget Marchés Financiers (TradingView) -->
+            <!-- ======================== -->
+            <!-- WIDGET MARCHÉ FINANCIER  -->
+            <!-- ======================== -->
             <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-96">
                 <h3 class="font-bold text-orange-400 mb-4 text-lg">Marchés Financiers</h3>
                 <div class="tradingview-widget-container">
                   <div class="tradingview-widget-container__widget"></div>
                   <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
                   {
-
                           "colorTheme": "dark",
                           "dateRange": "12M",
                           "showChart": false,
@@ -220,19 +335,19 @@
                         <div class="text-gray-500 text-xs font-bold">D</div>
                     </div>
 
+                    {# Ce div est le conteneur vide (le réceptacle) qui va recevoir les numéros des jours du mois #}
+                    {# (1, 2, 3... 30, 31) générés par le JavaScript situé au bas de votre page. #}
                     <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-sm flex-1 content-start">
                     </div>
          </div>
-            {% endif %}
 
+           {% endif %}
             <!-- =================================== -->
             <!-- WIDGETS UTILISATEUR (Catégories)   -->
             <!-- =================================== -->
-
             {% for widget in active_page.widgets.all %}
                 {% include "partials/widget.html" %}
             {% endfor %}
-
         </div>
 
     {% else %}
@@ -373,10 +488,6 @@
     </div>
 </div>
 
-
-
-
-
 <!-- Modale : Supprimer un widget -->
 <div id="modal-delete-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
         <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
@@ -418,6 +529,22 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
     </svg>
 </button>
+
+
+<!-- =================================== -->
+<!-- BOUTON BACKUP                       -->
+<!-- =================================== -->
+<a href="{% url 'download_backup' %}"
+   class="fixed bottom-20 right-6 z-50 bg-gray-800 hover:bg-green-600 text-gray-400 hover:text-white p-3 rounded-full shadow-2xl border border-gray-600 transition-all duration-300 opacity-50 hover:opacity-100"
+   title="Télécharger une sauvegarde (.zip)">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+    </svg>
+</a>
+
+
+
+
 
 <script>
     // --- GESTION DU MENU WIDGET (Déplacement catégorie) ---

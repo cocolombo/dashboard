@@ -39,7 +39,7 @@ class Widget(models.Model):
 
 class Link(models.Model):
     title = models.CharField(max_length=200)
-    url = models.URLField()
+    url = models.URLField(blank=True, null=True)
     icon_url = models.URLField(blank=True, null=True)
     widget = models.ForeignKey(Widget, on_delete=models.CASCADE, related_name='links')
     order = models.IntegerField(default=0)

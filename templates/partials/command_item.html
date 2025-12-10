@@ -1,0 +1,25 @@
+<div class="relative group/cmd w-full" id="link-{{ link.id }}">
+    
+    <button hx-get="{% url 'run_command' link.id %}"
+            hx-swap="none"
+            class="w-full h-16 bg-gray-700 hover:bg-blue-600 text-white rounded shadow border border-gray-600 flex flex-col items-center justify-center transition-transform active:scale-95 px-1 overflow-hidden">
+        
+        <span class="font-bold text-xs text-center w-full truncate px-1">
+            {{ link.title }}
+        </span>
+        
+        <span class="text-[9px] text-gray-400 mt-1 font-mono w-full text-center truncate opacity-60 px-1">
+            >_ {{ link.url }}
+        </span>
+    </button>
+
+    <div class="absolute top-0 right-0 hidden group-hover/cmd:flex space-x-0.5 bg-gray-900/90 rounded-bl px-1 py-0.5 z-10">
+        <button hx-get="{% url 'edit_link' link.id %}" 
+                hx-target="#link-{{ link.id }}" 
+                hx-swap="outerHTML"
+                class="text-gray-300 hover:text-yellow-400 text-[10px] p-0.5 font-bold">✎</button>
+        
+        <button onclick="confirmDeleteLink('{{ link.id }}')" 
+                class="text-gray-300 hover:text-red-500 text-[10px] p-0.5 font-bold">✕</button>
+    </div>
+</div>

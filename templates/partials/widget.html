@@ -81,22 +81,9 @@
                 <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white py-1 rounded text-sm">Créer le bouton</button>
             </form>
 
-            <div class="grid grid-cols-2 gap-2 overflow-y-auto p-1 max-h-64 custom-scrollbar">
+            <div class="grid grid-cols-2 gap-2 overflow-y-auto p-1 max-h-64 custom-scrollbar w-full">
                 {% for link in widget.links.all %}
-                <div class="relative group/cmd">
-                    <button hx-get="{% url 'run_command' link.id %}"
-                            hx-swap="none"
-                            class="w-full bg-gray-700 hover:bg-blue-600 text-white p-2 rounded shadow border border-gray-600 flex flex-col items-center justify-center transition-all active:scale-95 h-16">
-                        <span class="font-bold text-xs text-center leading-tight">{{ link.title }}</span>
-                        <span class="text-[9px] text-gray-400 mt-1 font-mono truncate max-w-full opacity-60 w-full text-center">
-                            >_ {{ link.url|truncatechars:12 }}
-                        </span>
-                    </button>
-
-                    <div class="absolute top-0 right-0 flex space-x-1 opacity-0 group-hover/cmd:opacity-100 transition-opacity bg-gray-900/80 rounded px-1">
-                         <button onclick="confirmDeleteLink('{{ link.id }}')" class="text-gray-300 hover:text-red-500 text-xs p-1 font-bold">✕</button>
-                    </div>
-                </div>
+                    {% include "partials/command_item.html" %}
                 {% endfor %}
             </div>
 

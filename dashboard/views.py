@@ -7,6 +7,7 @@ from .models import Page, Widget, Link
 import psutil
 import subprocess
 import os
+import shutil
 
 import zipfile
 import io
@@ -164,11 +165,6 @@ def add_link(request, widget_id):
         Link.objects.create(title=title, url=url, widget=widget, order=999)
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
-
-
-
-
-
 
 def delete_link(request, link_id):
     """
@@ -368,20 +364,6 @@ def rename_widget(request, pk):
 
 
 def edit_link(request, pk):
-    """
-    Gère l'édition d'un lien (Titre et URL) en mode 'In-Place'.
-
-    Utilisé par HTMX.
-    - GET : Renvoie le formulaire d'édition à la place du lien.
-    - POST : Sauvegarde les modifications et renvoie l'élément lien standard.
-
-    Args:
-        request (HttpRequest): L'objet de requête.
-        pk (int): La clé primaire (ID) du lien.
-
-    Returns:
-        HttpResponse: Le fragment HTML (Partial) mis à jour.
-    """
     link = get_object_or_404(Link, pk=pk)
 
     if request.method == "POST":
@@ -389,12 +371,17 @@ def edit_link(request, pk):
         link.title = request.POST.get('title')
         link.url = request.POST.get('url')
         link.save()
-        # On renvoie l'item normal mis à jour
-        return render(request, 'partials/link_item.html', {'link': link})
+
+        # INTELLIGENCE ICI :
+        # Si le widget parent est de type 'command', on renvoie un BOUTON.
+        # Sinon, on renvoie une LIGNE DE LISTE.
+        if link.widget.widget_type == 'command':
+            return render(request, 'partials/command_item.html', {'link': link})
+        else:
+            return render(request, 'partials/link_item.html', {'link': link})
 
     # Si GET, on renvoie le formulaire d'édition
     return render(request, 'partials/link_form.html', {'link': link})
-
 
 # dashboard/views.py
 
@@ -465,12 +452,6 @@ def system_monitor(request):
         'gpu': gpu,
     }
     return render(request, 'partials/system_monitor.html', context)
-
-
-
-
-
-
 
 @require_POST
 def save_note_content(request, widget_id):
@@ -596,33 +577,50 @@ def download_backup(request):
 
 
 def run_command(request, link_id):
-    """
-    Exécute la commande stockée dans le champ 'url' du lien.
-    Ouvre une fenêtre de terminal pour voir le résultat.
-    """
     link = get_object_or_404(Link, id=link_id)
     command = link.url.strip()
+
+    print(f"--- TENTATIVE D'EXÉCUTION : {command} ---")
 
     if not command:
         return HttpResponse(status=400)
 
-    try:
-        # La commande magique pour Ubuntu :
-        # 1. On ouvre gnome-terminal
-        # 2. On lance bash
-        # 3. On exécute votre commande
-        # 4. On ajoute "; read" pour que la fenêtre ne se ferme pas tout de suite à la fin
-        full_cmd = [
-            'gnome-terminal',
-            '--',
-            'bash',
-            '-c',
-            f"{command}; echo ''; read -p 'Appuyez sur Entrée pour fermer...' variable"
-        ]
+    # 1. On cherche le terminal disponible
+    # On préfère gnome-terminal, sinon on prend xterm, sinon on essaie 'konsole' (KDE)
+    terminal_path = shutil.which('gnome-terminal') or shutil.which('xterm') or shutil.which('konsole')
 
-        subprocess.Popen(full_cmd)
-        return HttpResponse(status=204)  # Succès silencieux
-    except FileNotFoundError:
-        print("Erreur : gnome-terminal n'est pas installé.")
+    if not terminal_path:
+        print("ERREUR: Aucun terminal compatible trouvé.")
         return HttpResponse(status=500)
 
+    try:
+        # La commande bash à exécuter à l'intérieur
+        bash_cmd = f"{command}; echo ''; read -p 'Appuyez sur Entrée pour fermer...' variable"
+
+        # 2. On adapte la syntaxe selon le terminal trouvé
+        if 'gnome-terminal' in terminal_path:
+            # Syntaxe Gnome : gnome-terminal -- bash -c "..."
+            full_cmd = [terminal_path, '--', 'bash', '-c', bash_cmd]
+
+        elif 'xterm' in terminal_path:
+            # Syntaxe Xterm : xterm -fa 'Monospace' -fs 10 -geometry 100x30 -e bash -c "..."
+            # J'ajoute -fa et -geometry pour que xterm soit moins moche et plus grand
+            full_cmd = [terminal_path, '-fa', 'Monospace', '-fs', '11', '-geometry', '130x40', '-e', 'bash', '-c',
+                        bash_cmd]
+
+        elif 'konsole' in terminal_path:
+            # Syntaxe Konsole (si jamais)
+            full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
+
+        else:
+            # Par défaut on tente le -e standard
+            full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
+
+        # 3. Exécution
+        subprocess.Popen(full_cmd)
+        print(f"SUCCÈS: Terminal lancé ({terminal_path})")
+        return HttpResponse(status=204)
+
+    except Exception as e:
+        print(f"ERREUR CRITIQUE: {e}")
+        return HttpResponse(status=500)

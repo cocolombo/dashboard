@@ -1,3 +1,33 @@
+<!--
+    Ce fichier est le template principal et unique du tableau de bord personnel.
+    Il est rendu par Django et contient toute la structure de l'interface.
+
+    FONCTIONNEMENT :
+    - Django : Gère le rendu initial de la page, l'affichage des données (pages, widgets, liens)
+      et traite les requêtes POST pour les modifications de la base de données.
+    - HTMX : Utilisé pour rendre l'application dynamique sans rechargement de page.
+      Les actions comme l'ajout, la suppression ou la modification d'éléments
+      se font via des requêtes AJAX déclenchées par des attributs `hx-*`.
+    - Tailwind CSS : Framework CSS utilisé pour styliser l'ensemble de l'application
+      avec une approche "utility-first". Le mode sombre (`dark`) est activé par défaut.
+    - SortableJS : Bibliothèque JavaScript qui permet de réorganiser les éléments
+      (liens, widgets, onglets) par glisser-déposer (Drag & Drop).
+    - JavaScript Vanilla : Utilisé pour la gestion des modales, des menus contextuels,
+      de l'horloge, de la météo, du calendrier et du "Mode Zen".
+
+    STRUCTURE :
+    1.  HEAD : Importation des librairies (Tailwind, HTMX, SortableJS) et styles CSS.
+    2.  NAVIGATION PRINCIPALE : Barre supérieure affichant les onglets (Pages) et les boutons de gestion.
+    3.  BARRE DE RECHERCHE : Formulaire de recherche Google et bouton d'ajout de catégorie.
+    4.  CONTENU PRINCIPAL :
+        - Affiche une grille de "widgets" (catégories) pour la page active.
+        - Gère le cas spécial de la page "Infos" pour afficher des widgets système (météo, horloge, etc.).
+        - Chaque widget est rendu via une inclusion du template partiel `partials/widget.html`.
+    5.  MENUS CONTEXTUELS : Menus cachés qui apparaissent au clic droit sur un lien ou un widget.
+    6.  MODALES : Fenêtres pop-up pour les actions de création, renommage et suppression.
+    7.  BOUTONS FLOTTANTS : "Mode Zen" et "Backup".
+    8.  SCRIPTS : Contient toute la logique côté client (Drag & Drop, gestion des modales, horloge, etc.).
+-->
 {% load static %}
 <!DOCTYPE html>
 <html lang="fr" class="dark">
@@ -5,10 +35,12 @@
     <meta charset="UTF-8">
     <title>Dashboard Perso</title>
 
+    <!-- Importation des librairies JS -->
     <script src="{% static 'js/tailwind.js' %}"></script>
     <script src="{% static 'js/htmx.js' %}"></script>
     <script src="{% static 'js/sortable.js' %}"></script>
 
+    <!-- Configuration de Tailwind CSS en JavaScript -->
     <script>
             tailwind.config = {
                 darkMode: 'class',
@@ -26,33 +58,38 @@
             }
     </script>
 
+    <!-- Styles CSS additionnels -->
     <style>
         #context-menu { display: none; position: absolute; z-index: 50; }
         .sortable-ghost { opacity: 0.4; background-color: #4B5563; }
 
         /* --- MODE ZEN --- */
+        /* Ces classes masquent les éléments d'interface quand le body a la classe .zen-mode */
         body.zen-mode #main-nav { display: none !important; }
         body.zen-mode #search-container { display: none !important; }
         body.zen-mode .main-content { padding-top: 2rem !important; }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 font-sans min-h-screen select-none"
-      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'> <!-- Ajoute le token CSRF à toutes les requêtes HTMX -->
+
 <!-- =================================== -->
-<!-- NAVIGATION PRINCIPALE (Pages)      -->
+<!-- NAVIGATION PRINCIPALE (ONGLETS/PAGES) -->
 <!-- =================================== -->
 <nav id="main-nav" class="flex items-center space-x-2 p-3 bg-black border-b border-gray-800 overflow-x-auto">
     <div class="font-bold text-xl mr-4 text-white">≡</div>
 
+    <!-- Boucle sur les pages pour afficher les onglets -->
     {% for page in pages %}
-            <a href="{% url 'index' page.slug %}"
-               data-id="{{ page.id }}"
-               class="px-4 py-2 rounded transition-colors duration-200 whitespace-nowrap cursor-move
-               {% if page == active_page %}bg-blue-600 text-white font-bold shadow-md{% else %}bg-gray-800 hover:bg-gray-700 text-gray-300{% endif %}">
-                {{ page.name }}
-            </a>
-        {% endfor %}
+        <a href="{% url 'index' page.slug %}"
+           data-id="{{ page.id }}"
+           class="px-4 py-2 rounded transition-colors duration-200 whitespace-nowrap cursor-move
+           {% if page == active_page %}bg-blue-600 text-white font-bold shadow-md{% else %}bg-gray-800 hover:bg-gray-700 text-gray-300{% endif %}">
+            {{ page.name }}
+        </a>
+    {% endfor %}
 
+    <!-- Boutons de gestion des pages -->
     <button onclick="toggleModal('modal-add-page')"
             class="px-3 py-2 rounded bg-gray-800 hover:bg-green-600 text-gray-400 hover:text-white font-bold transition-colors"
             title="Nouvelle page">
@@ -80,6 +117,7 @@
 <!-- BARRE DE RECHERCHE    -->
 <!-- ======================-->
 <div id="search-container" class="flex justify-center items-center py-8 px-4 gap-4">
+    <!-- Formulaire de recherche Google -->
     <form action="https://www.google.com/search" method="GET" target="_blank"
           class="w-full max-w-2xl relative group">
         <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors">
@@ -88,24 +126,19 @@
             </svg>
         </div>
 
-{#        <input type="text" name="q" placeholder="Rechercher sur le web..." autofocus#}
-{#               class="w-full bg-gray-800 text-white text-lg border border-gray-700 rounded-full py-3 pl-12 pr-4 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-500">#}
-
         <input type="text"
-       id="search-input"
-       name="q"
-       placeholder="Rechercher (Tapez pour filtrer, Entrée pour Google)..."
-       autofocus
-       onkeyup="liveSearch()"
-       class="w-full bg-gray-800 text-white text-lg border border-gray-700 rounded-full py-3 pl-12 pr-4 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-500">
+               id="search-input"
+               name="q"
+               placeholder="Rechercher (Tapez pour filtrer, Entrée pour Google)..."
+               autofocus
+               onkeyup="liveSearch()"
+               class="w-full bg-gray-800 text-white text-lg border border-gray-700 rounded-full py-3 pl-12 pr-4 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder-gray-500">
 
         <div class="absolute inset-0 rounded-full bg-blue-500 opacity-0 group-focus-within:opacity-20 blur-md transition-opacity -z-10"></div>
     </form>
 
     {% if active_page %}
-    <!-- ==================-->
-    <!-- BOUTON AJOUT      -->
-    <!-- ==================-->
+    <!-- Bouton pour ajouter une nouvelle catégorie (widget) à la page active -->
     <button onclick="toggleModal('modal-add-widget')"
             class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-3 rounded-full shadow-lg flex items-center font-bold transition-colors whitespace-nowrap"
             title="Ajouter une catégorie à cette page">
@@ -115,130 +148,19 @@
 </div>
 
 <!-- =================================== -->
-<!-- CONTENU PRINCIPAL (Grille widgets)  -->
+<!-- CONTENU PRINCIPAL (GRILLE DE WIDGETS) -->
 <!-- =================================== -->
 <div class="p-6 main-content">
     {% if active_page %}
 
-        <!-- Grille responsive des widgets -->
+        <!-- Grille responsive qui contient tous les widgets -->
         <div id="widget-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <!-- Condition spéciale : si la page s'appelle 'infos', on affiche les widgets système -->
             {% if active_page.slug == 'infos' %}
-            <!-- ==================-->
-            <!-- WIDGET MÉTÉO       -->
-            <!-- ===================-->
-                <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-48 flex flex-col justify-between relative overflow-hidden">
-                    <!-- Contenu météo actuel + prévisions -->
-                    <div class="flex justify-between items-start z-10">
-                        <div>
-                            <h3 class="font-bold text-white text-xl">Météo</h3>
-                            <p class="text-sm text-gray-400 uppercase tracking-wider mt-1">Montréal, QC</p>
-                        </div>
-                        <div class="text-right">
-                            <div id="current-temp" class="text-4xl font-bold text-white">--°</div>
-                            <div id="current-desc" class="text-xs text-gray-400 capitalize">Chargement...</div>
-                        </div>
-                    </div>
-
-                    <div id="forecast-grid" class="grid grid-cols-3 gap-2 mt-4 z-10">
-                        <!-- Prévisions chargées dynamiquement -->
-                        <div class="text-center animate-pulse">
-                            <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
-                            <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
-                        </div>
-                        <div class="text-center animate-pulse delay-75">
-                            <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
-                            <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
-                        </div>
-                        <div class="text-center animate-pulse delay-150">
-                            <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
-                            <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
-                        </div>
-                    </div>
-
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-                    <div class="absolute -left-10 -top-10 w-40 h-40 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
-                </div>
-
-                <!-- ==================  -->
-                <!-- WIDGET HROLOGE/DATE -->
-                <!-- =================== -->
-
-                <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex flex-col justify-center items-center">
-                    <h3 class="font-bold text-orange-400 w-full text-left mb-2">Heure Locale</h3>
-                    <div id="clock-display" class="text-4xl font-mono text-blue-400 font-bold tracking-wider">--:--:--</div>
-                    <div id="date-display" class="text-gray-400 text-lg mt-2 capitalize">Chargement...</div>
-                </div>
-
-                <!-- ===================== -->
-                <!-- WIDGET SYSTEM NOBITOR -->
-                <!-- ===================== -->
-                <div class="col-span-1 md:col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-52 flex flex-col justify-center"
-                     hx-get="{% url 'system_monitor' %}"
-                     hx-trigger="load, every 8s">
-
-                    <div class="text-center text-gray-500 text-xs animate-pulse">
-                        Chargement sys...
-                    </div>
-                </div>
-
-                <!-- ======================== -->
-                <!-- WIDGET MARCHÉ FINANCIER  -->
-                <!-- ======================== -->
-                <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-96">
-                    <h3 class="font-bold text-orange-400 mb-4 text-lg">Marchés Financiers</h3>
-                    <div class="tradingview-widget-container">
-                      <div class="tradingview-widget-container__widget"></div>
-                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-                      {
-
-                              "colorTheme": "dark",
-                              "dateRange": "12M",
-                              "showChart": false,
-                              "locale": "fr",
-                              "largeChartUrl": "",
-                              "isTransparent": true,
-                              "showSymbolLogo": true,
-                              "showFloatingTooltip": false,
-                              "width": "100%",
-                              "height": "100%",
-                              "tabs": [
-                                {
-                                  "title": "Indices & Crypto",
-                                  "symbols": [
-                                    { "s": "FOREXCOM:SPXUSD", "d": "S&P 500" },
-                                    { "s": "FOREXCOM:NSXUSD", "d": "Nasdaq 100" },
-                                    { "s": "TSX:TSX", "d": "Toronto TSX" },
-                                    { "s": "BITSTAMP:BTCUSD", "d": "Bitcoin" },
-                                    { "s": "BITSTAMP:ETHUSD", "d": "Ethereum" },
-                                    { "s": "FX_IDC:EURUSD", "d": "EUR / USD" }
-                                  ]
-                                }
-                              ]
-                            }
-                      </script>
-                    </div>
-                </div>
-
-             <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-96 flex flex-col">
-                        <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                            <h3 id="cal-month-year" class="font-bold text-orange-400 text-lg capitalize">--</h3>
-                            <div class="text-xs text-gray-500 bg-gray-900 px-2 py-1 rounded border border-gray-600">Aujourd'hui</div>
-                        </div>
-
-                        <div class="grid grid-cols-7 gap-1 text-center mb-2">
-                            <div class="text-gray-500 text-xs font-bold">L</div>
-                            <div class="text-gray-500 text-xs font-bold">M</div>
-                            <div class="text-gray-500 text-xs font-bold">M</div>
-                            <div class="text-gray-500 text-xs font-bold">J</div>
-                            <div class="text-gray-500 text-xs font-bold">V</div>
-                            <div class="text-gray-500 text-xs font-bold">S</div>
-                            <div class="text-gray-500 text-xs font-bold">D</div>
-                        </div>
-
-                        <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-sm flex-1 content-start">
-                        </div>
-             </div>            <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-48 flex flex-col justify-between relative overflow-hidden">
-                <!-- Contenu météo actuel + prévisions -->
+                <!-- WIDGET MÉTÉO -->
+            <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-48 flex flex-col justify-between relative overflow-hidden">
+            <!-- ... Contenu du widget météo ... -->
                 <div class="flex justify-between items-start z-10">
                     <div>
                         <h3 class="font-bold text-white text-xl">Météo</h3>
@@ -251,16 +173,7 @@
                 </div>
 
                 <div id="forecast-grid" class="grid grid-cols-3 gap-2 mt-4 z-10">
-                    <!-- Prévisions chargées dynamiquement -->
                     <div class="text-center animate-pulse">
-                        <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
-                        <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
-                    </div>
-                    <div class="text-center animate-pulse delay-75">
-                        <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
-                        <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
-                    </div>
-                    <div class="text-center animate-pulse delay-150">
                         <div class="h-8 w-8 bg-gray-700 rounded-full mx-auto mb-2"></div>
                         <div class="h-2 w-10 bg-gray-700 rounded mx-auto"></div>
                     </div>
@@ -270,105 +183,101 @@
                 <div class="absolute -left-10 -top-10 w-40 h-40 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
             </div>
 
-            <!-- ==================  -->
-            <!-- WIDGET HROLOGE/DATE -->
-            <!-- =================== -->
-
+                <!-- WIDGET HORLOGE/DATE -->
             <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex flex-col justify-center items-center">
+                <!-- ... Contenu du widget horloge ... -->
                 <h3 class="font-bold text-orange-400 w-full text-left mb-2">Heure Locale</h3>
                 <div id="clock-display" class="text-4xl font-mono text-blue-400 font-bold tracking-wider">--:--:--</div>
                 <div id="date-display" class="text-gray-400 text-lg mt-2 capitalize">Chargement...</div>
             </div>
 
-            <!-- ===================== -->
-            <!-- WIDGET SYSTEM NOBITOR -->
-            <!-- ===================== -->
+             <!-- WIDGET MONITEUR SYSTÈME (chargé avec HTMX) -->
             <div class="col-span-1 md:col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-52 flex flex-col justify-center"
                  hx-get="{% url 'system_monitor' %}"
                  hx-trigger="load, every 8s">
-
                 <div class="text-center text-gray-500 text-xs animate-pulse">
                     Chargement sys...
                 </div>
             </div>
 
-            <!-- ======================== -->
-            <!-- WIDGET MARCHÉ FINANCIER  -->
-            <!-- ======================== -->
+                <!-- WIDGET MARCHÉS FINANCIERS (via TradingView) -->
             <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-96">
+                 <!-- ... Contenu du widget marchés ... -->
                 <h3 class="font-bold text-orange-400 mb-4 text-lg">Marchés Financiers</h3>
                 <div class="tradingview-widget-container">
                   <div class="tradingview-widget-container__widget"></div>
                   <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
                   {
-                          "colorTheme": "dark",
-                          "dateRange": "12M",
-                          "showChart": false,
-                          "locale": "fr",
-                          "largeChartUrl": "",
-                          "isTransparent": true,
-                          "showSymbolLogo": true,
-                          "showFloatingTooltip": false,
-                          "width": "100%",
-                          "height": "100%",
-                          "tabs": [
-                            {
-                              "title": "Indices & Crypto",
-                              "symbols": [
-                                { "s": "FOREXCOM:SPXUSD", "d": "S&P 500" },
-                                { "s": "FOREXCOM:NSXUSD", "d": "Nasdaq 100" },
-                                { "s": "TSX:TSX", "d": "Toronto TSX" },
-                                { "s": "BITSTAMP:BTCUSD", "d": "Bitcoin" },
-                                { "s": "BITSTAMP:ETHUSD", "d": "Ethereum" },
-                                { "s": "FX_IDC:EURUSD", "d": "EUR / USD" }
-                              ]
-                            }
+                      "colorTheme": "dark",
+                      "dateRange": "12M",
+                      "showChart": false,
+                      "locale": "fr",
+                      "largeChartUrl": "",
+                      "isTransparent": true,
+                      "showSymbolLogo": true,
+                      "showFloatingTooltip": false,
+                      "width": "100%",
+                      "height": "100%",
+                      "tabs": [
+                        {
+                          "title": "Indices & Crypto",
+                          "symbols": [
+                            { "s": "FOREXCOM:SPXUSD", "d": "S&P 500" },
+                            { "s": "FOREXCOM:NSXUSD", "d": "Nasdaq 100" },
+                            { "s": "TSX:TSX", "d": "Toronto TSX" },
+                            { "s": "BITSTAMP:BTCUSD", "d": "Bitcoin" },
+                            { "s": "BITSTAMP:ETHUSD", "d": "Ethereum" },
+                            { "s": "FX_IDC:EURUSD", "d": "EUR / USD" }
                           ]
                         }
+                      ]
+                    }
                   </script>
                 </div>
             </div>
 
-         <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-96 flex flex-col">
-                    <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
-                        <h3 id="cal-month-year" class="font-bold text-orange-400 text-lg capitalize">--</h3>
-                        <div class="text-xs text-gray-500 bg-gray-900 px-2 py-1 rounded border border-gray-600">Aujourd'hui</div>
-                    </div>
+                <!-- WIDGET CALENDRIER -->
+            <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-96 flex flex-col">
+                <!-- ... Contenu du widget calendrier ... -->
+                <div class="flex justify-between items-center mb-4 border-b border-gray-700 pb-2">
+                    <h3 id="cal-month-year" class="font-bold text-orange-400 text-lg capitalize">--</h3>
+                    <div class="text-xs text-gray-500 bg-gray-900 px-2 py-1 rounded border border-gray-600">Aujourd'hui</div>
+                </div>
 
-                    <div class="grid grid-cols-7 gap-1 text-center mb-2">
-                        <div class="text-gray-500 text-xs font-bold">L</div>
-                        <div class="text-gray-500 text-xs font-bold">M</div>
-                        <div class="text-gray-500 text-xs font-bold">M</div>
-                        <div class="text-gray-500 text-xs font-bold">J</div>
-                        <div class="text-gray-500 text-xs font-bold">V</div>
-                        <div class="text-gray-500 text-xs font-bold">S</div>
-                        <div class="text-gray-500 text-xs font-bold">D</div>
-                    </div>
+                <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                    <div class="text-gray-500 text-xs font-bold">L</div>
+                    <div class="text-gray-500 text-xs font-bold">M</div>
+                    <div class="text-gray-500 text-xs font-bold">M</div>
+                    <div class="text-gray-500 text-xs font-bold">J</div>
+                    <div class="text-gray-500 text-xs font-bold">V</div>
+                    <div class="text-gray-500 text-xs font-bold">S</div>
+                    <div class="text-gray-500 text-xs font-bold">D</div>
+                </div>
 
-                    {# Ce div est le conteneur vide (le réceptacle) qui va recevoir les numéros des jours du mois #}
-                    {# (1, 2, 3... 30, 31) générés par le JavaScript situé au bas de votre page. #}
-                    <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-sm flex-1 content-start">
-                    </div>
-         </div>
+                <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-sm flex-1 content-start">
+                </div>
+             </div>
 
-           {% endif %}
-            <!-- =================================== -->
-            <!-- WIDGETS UTILISATEUR (Catégories)   -->
-            <!-- =================================== -->
+            {% endif %}
+
+            <!-- Boucle pour afficher les widgets créés par l'utilisateur -->
             {% for widget in active_page.widgets.all %}
                 {% include "partials/widget.html" %}
             {% endfor %}
+
         </div>
 
     {% else %}
-        <!-- Message quand aucune page n'existe -->
+        <!-- Message affiché si aucune page n'est configurée -->
         <div class="text-center text-gray-500 mt-10">Aucune page configurée. Lancez la commande seed_db !</div>
     {% endif %}
 </div>
 
 <!-- =================================== -->
-<!-- MENU CONTEXTUEL LIEN (Clic droit)   -->
+<!-- MENUS CONTEXTUELS (CLIC DROIT)      -->
 <!-- =================================== -->
+
+<!-- Menu pour les liens -->
 <div id="context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-xl w-56 py-1 text-sm">
     <div class="px-4 py-2 font-bold border-b border-gray-700 text-gray-400 text-xs uppercase">Actions</div>
     <div class="relative group">
@@ -390,11 +299,9 @@
         </div>
     </div>
 
-
-<!-- =================================== -->
-<!-- MENU CONTEXTUEL WIDGET (Déplacement catégorie) -->
-<!-- =================================== -->
+<!-- Menu pour les widgets (catégories) -->
 <div id="widget-context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-2xl w-56 py-1 text-sm fixed z-50 hidden">
+    <!-- ... Options du menu contextuel pour les widgets ... -->
     <div class="px-4 py-2 font-bold border-b border-gray-700 text-orange-400 text-xs uppercase bg-gray-900">
             Déplacer la catégorie vers...
         </div>
@@ -410,17 +317,15 @@
             </form>
             {% endif %}
         {% endfor %}
-    </div>
-
-
-
+</div>
 
 <!-- =================================== -->
-<!-- MODALES (Popups)                    -->
+<!-- MODALES (FENÊTRES POP-UP)           -->
 <!-- =================================== -->
 
 <!-- Modale : Ajouter une page -->
 <div id="modal-add-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    <!-- ... Formulaire d'ajout de page ... -->
     <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
             <h2 class="text-xl font-bold text-white mb-4">Nouvelle Page</h2>
             <form action="{% url 'create_page' %}" method="POST">
@@ -438,9 +343,10 @@
         </div>
     </div>
 
-<!-- Modale : Renommer la page -->
 {% if active_page %}
+    <!-- Modale : Renommer la page -->
     <div id="modal-rename-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <!-- ... Formulaire de renommage de page ... -->
         <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
             <h2 class="text-xl font-bold text-white mb-4">Renommer la page</h2>
             <form action="{% url 'rename_page' active_page.id %}" method="POST">
@@ -456,8 +362,9 @@
         </div>
     </div>
 
-<!-- Modale : Supprimer la page -->
-<div id="modal-delete-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    <!-- Modale : Supprimer la page -->
+    <div id="modal-delete-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <!-- ... Confirmation de suppression de page ... -->
         <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
             <h2 class="text-xl font-bold text-white mb-2">Supprimer la page ?</h2>
             <p class="text-gray-300 mb-6">
@@ -471,35 +378,38 @@
         </div>
     </div>
 
-<!-- Modale : Ajouter une catégorie (widget) -->
-<div id="modal-add-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
-    <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
-        <h2 class="text-xl font-bold text-white mb-4">Nouvelle Catégorie</h2>
+    <!-- Modale : Ajouter une catégorie (widget) -->
+    <div id="modal-add-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <!-- ... Formulaire d'ajout de widget ... -->
+        <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+            <h2 class="text-xl font-bold text-white mb-4">Nouvelle Catégorie</h2>
 
-        <form action="{% url 'add_widget' active_page.id %}" method="POST">
-            {% csrf_token %}
+            <form action="{% url 'add_widget' active_page.id %}" method="POST">
+                {% csrf_token %}
 
-            <label class="block text-gray-400 text-sm mb-2">Titre de la catégorie</label>
-            <input type="text" name="title" required autofocus
-                   class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
-                   placeholder="Ex: Sports, Notes...">
+                <label class="block text-gray-400 text-sm mb-2">Titre de la catégorie</label>
+                <input type="text" name="title" required autofocus
+                       class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
+                       placeholder="Ex: Sports, Notes...">
 
-            <label class="block text-gray-400 text-sm mb-2">Type de contenu</label>
-            <select name="widget_type" class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none">
-                <option value="list">Liste de liens</option>
-                <option value="note">Bloc-notes</option>
-            </select>
+                <label class="block text-gray-400 text-sm mb-2">Type de contenu</label>
+                <select name="widget_type" class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none">
+                    <option value="list">Liste de liens</option>
+                    <option value="note">Bloc-notes</option>
+                    <option value="command">Lanceur de scripts</option>
+                </select>
 
-            <div class="flex justify-end space-x-3">
-                <button type="button" onclick="toggleModal('modal-add-widget')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">Créer</button>
-            </div>
-        </form>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="toggleModal('modal-add-widget')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">Créer</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- Modale : Supprimer un widget -->
-<div id="modal-delete-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    <!-- Modale : Supprimer un widget -->
+    <div id="modal-delete-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <!-- ... Confirmation de suppression de widget ... -->
         <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
             <h2 class="text-xl font-bold text-white mb-2">Supprimer la catégorie ?</h2>
             <p class="text-gray-300 mb-6">
@@ -512,8 +422,9 @@
         </div>
     </div>
 
-<!-- Modale : Supprimer un lien -->
-<div id="modal-delete-link" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    <!-- Modale : Supprimer un lien -->
+    <div id="modal-delete-link" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+       <!-- ... Confirmation de suppression de lien ... -->
         <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
             <h2 class="text-xl font-bold text-white mb-2">Supprimer ce lien ?</h2>
             <p class="text-gray-300 mb-6">
@@ -526,11 +437,13 @@
         </div>
     </div>
 
-    {% endif %}
+{% endif %}
 
 <!-- =================================== -->
-<!-- BOUTON MODE ZEN                     -->
+<!-- BOUTONS FLOTTANTS                   -->
 <!-- =================================== -->
+
+<!-- Bouton pour activer/désactiver le "Mode Zen" -->
 <button id="zen-toggle-btn"
         onclick="toggleZenMode()"
         class="fixed bottom-6 right-6 z-50 bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white p-3 rounded-full shadow-2xl border border-gray-600 transition-all duration-300 opacity-50 hover:opacity-100"
@@ -540,10 +453,7 @@
     </svg>
 </button>
 
-
-<!-- =================================== -->
-<!-- BOUTON BACKUP                       -->
-<!-- =================================== -->
+<!-- Bouton pour télécharger la sauvegarde -->
 <a href="{% url 'download_backup' %}"
    class="fixed bottom-20 right-6 z-50 bg-gray-800 hover:bg-green-600 text-gray-400 hover:text-white p-3 rounded-full shadow-2xl border border-gray-600 transition-all duration-300 opacity-50 hover:opacity-100"
    title="Télécharger une sauvegarde (.zip)">
@@ -552,24 +462,22 @@
     </svg>
 </a>
 
-
-
-
-
+<!-- =================================== -->
+<!-- SCRIPTS JAVASCRIPT                  -->
+<!-- =================================== -->
 <script>
-    // --- GESTION DU MENU WIDGET (Déplacement catégorie) ---
+   // --- GESTION DES MENUS CONTEXTUELS ---
+    // ... (code pour afficher/cacher les menus au clic droit et mettr
     const widgetMenu = document.getElementById('widget-context-menu');
 
     function showWidgetMenu(e, widgetId) {
         e.preventDefault();
         e.stopPropagation();
 
-        // Positionnement sous la souris
         widgetMenu.style.left = e.clientX + 'px';
         widgetMenu.style.top = e.clientY + 'px';
         widgetMenu.classList.remove('hidden');
 
-        // Mise à jour de l'action du formulaire
         document.querySelectorAll('.widget-move-form').forEach(form => {
             let baseAction = form.getAttribute('action');
             let newAction = baseAction.replace(/\/\d+\/$/, '/' + widgetId + '/');
@@ -577,18 +485,17 @@
         });
     }
 
-    // Fermeture des menus
     document.addEventListener('click', function(e) {
         if (widgetMenu && !widgetMenu.contains(e.target)) {
             widgetMenu.classList.add('hidden');
         }
-        // Menu contextuel des liens aussi
         const linkMenu = document.getElementById('context-menu');
         if (linkMenu) linkMenu.style.display = 'none';
     });
 
     // --- GESTION DES MODALES (Popup) ---
     function toggleModal(modalId) {
+       // ... (code pour afficher/cacher les modales et gérer le focus)
         const modal = document.getElementById(modalId);
         if (modal.classList.contains('hidden')) {
             modal.classList.remove('hidden');
@@ -606,7 +513,7 @@
         }
     });
 
-    // --- PRÉPARATION SUPPRESSION (Injection ID dans le lien) ---
+    // --- PRÉPARATION SUPPRESSION ---
     function confirmDeleteWidget(widgetId) {
         const confirmBtn = document.getElementById('btn-confirm-delete-widget');
         confirmBtn.href = "/widget/delete/" + widgetId + "/";
@@ -670,6 +577,26 @@
         });
     }
 
+    // --- DRAG & DROP : PAGES (Onglets) ---
+    var navContainer = document.getElementById('main-nav');
+    if (navContainer) {
+        new Sortable(navContainer, {
+            animation: 150,
+            draggable: 'a', // On ne déplace que les liens (pas les boutons + / edit)
+            ghostClass: 'bg-gray-600',
+            onEnd: function (evt) {
+                var itemEl = evt.item;
+                var listItems = navContainer.querySelectorAll('a[data-id]');
+                var pageIds = Array.from(listItems).map(el => el.getAttribute('data-id'));
+
+                var formData = new FormData();
+                pageIds.forEach(id => formData.append('page', id));
+
+                fetch('/api/update-page-order/', { method: 'POST', body: formData });
+            }
+        });
+    }
+
     // --- MENU CONTEXTUEL : LIENS (Clic Droit) ---
     const linkMenu = document.getElementById('context-menu');
     function showContextMenu(e, linkId) {
@@ -704,29 +631,11 @@
     // Configuration Open-Meteo pour Montréal
     const API_URL = "https://api.open-meteo.com/v1/forecast?latitude=45.5017&longitude=-73.5673&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FToronto&forecast_days=4";
 
-    // Mapping des codes météo WMO vers des Icônes/Emojis
-    // Codes: https://open-meteo.com/en/docs
     function getWeatherIcon(code) {
         const icons = {
-            0: '☀️', // Ciel dégagé
-            1: '🌤️', // Peu nuageux
-            2: '⛅', // Partiellement nuageux
-            3: '☁️', // Couvert
-            45: '🌫️', // Brouillard
-            48: '🌫️',
-            51: '🌦️', // Bruine
-            53: '🌦️',
-            55: '🌧️',
-            61: '🌧️', // Pluie
-            63: '🌧️',
-            65: '⛈️',
-            71: '🌨️', // Neige
-            73: '🌨️',
-            75: '❄️',
-            80: '🌦️', // Averses
-            81: '🌧️',
-            82: '⛈️',
-            95: '⛈️', // Orage
+            0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️', 45: '🌫️', 48: '🌫️',
+            51: '🌦️', 53: '🌦️', 55: '🌧️', 61: '🌧️', 63: '🌧️', 65: '⛈️',
+            71: '🌨️', 73: '🌨️', 75: '❄️', 80: '🌦️', 81: '🌧️', 82: '⛈️', 95: '⛈️',
         };
         return icons[code] || '❓';
     }
@@ -741,15 +650,12 @@
             const response = await fetch(API_URL);
             const data = await response.json();
 
-            // 1. Mise à jour Actuelle
             document.getElementById('current-temp').innerText = Math.round(data.current.temperature_2m) + "°C";
-            document.getElementById('current-desc').innerText = "Code météo: " + data.current.weather_code; // On pourrait traduire le code en texte ici
+            document.getElementById('current-desc').innerText = "Code météo: " + data.current.weather_code;
 
-            // 2. Mise à jour Prévisions (Jours suivants)
             const grid = document.getElementById('forecast-grid');
-            grid.innerHTML = ''; // Vider les placeholders
+            grid.innerHTML = '';
 
-            // On boucle sur les jours 1, 2 et 3 (on saute le 0 qui est aujourd'hui)
             for (let i = 1; i < 4; i++) {
                 const dayName = getDayName(data.daily.time[i]);
                 const maxTemp = Math.round(data.daily.temperature_2m_max[i]);
@@ -770,13 +676,11 @@
 
         } catch (error) {
             console.error("Erreur Météo:", error);
-            document.getElementById('current-desc').innerText = "Erreur chargement";
+            if(document.getElementById('current-desc')) document.getElementById('current-desc').innerText = "Erreur";
         }
     }
 
-    // Lancer au chargement
     fetchWeather();
-    // Rafraichir toutes les 30 minutes
     setInterval(fetchWeather, 1800000);
 
 
@@ -784,33 +688,23 @@
     function toggleZenMode() {
         const body = document.body;
         body.classList.toggle('zen-mode');
-
-        // Sauvegarde la préférence
         const isZen = body.classList.contains('zen-mode');
         localStorage.setItem('zenMode', isZen);
-
-        // Change l'icône du bouton (optionnel mais sympa)
         const btn = document.querySelector('#zen-toggle-btn svg path');
         if (isZen) {
-            // Icône "Réduire" (Quitter le mode Zen)
             btn.setAttribute('d', 'M6 18L18 6M6 6l12 12');
         } else {
-            // Icône "Agrandir" (Entrer en mode Zen)
             btn.setAttribute('d', 'M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4');
         }
     }
 
-    // Appliquer le mode au chargement de la page si c'était activé
     document.addEventListener('DOMContentLoaded', function() {
         if (localStorage.getItem('zenMode') === 'true') {
-            toggleZenMode(); // Réactive le mode sans animation
+            toggleZenMode();
         }
     });
 
-
-// ... vos scripts existants (Zen mode, Météo, etc.) ...
-
-    // --- LOGIQUE CALENDRIER ---
+    // --- CALENDRIER ---
     (function() {
         const date = new Date();
         const currYear = date.getFullYear();
@@ -820,23 +714,16 @@
         const title = document.getElementById('cal-month-year');
         const grid = document.getElementById('cal-days');
 
-        // Sécurité : on ne lance le code que si le widget existe sur la page
         if(title && grid) {
-            // 1. Titre
             title.innerText = `${monthNames[currMonth]} ${currYear}`;
-
-            // 2. Calculs
             let firstDay = new Date(currYear, currMonth, 1).getDay();
-            // Ajustement Lundi=0 (JS renvoie Dimanche=0)
             firstDay = firstDay === 0 ? 6 : firstDay - 1;
             const lastDate = new Date(currYear, currMonth + 1, 0).getDate();
 
             let html = "";
-            // Cases vides début de mois
             for (let i = 0; i < firstDay; i++) {
                 html += `<div class="p-1"></div>`;
             }
-            // Jours du mois
             for (let i = 1; i <= lastDate; i++) {
                 let isToday = (i === date.getDate() && currMonth === new Date().getMonth() && currYear === new Date().getFullYear());
                 let classes = isToday
@@ -848,8 +735,8 @@
         }
     })();
 
-
-function openAllLinks(widgetId) {
+    // --- OPEN ALL LINKS ---
+    function openAllLinks(widgetId) {
         const widgetContainer = document.querySelector(`div[data-id="${widgetId}"]`);
         if (!widgetContainer) return;
 
@@ -859,11 +746,8 @@ function openAllLinks(widgetId) {
             if (!confirm(`Voulez-vous ouvrir ${links.length} onglets ?`)) return;
         }
 
-        // On transforme la liste en tableau pour utiliser l'index
         Array.from(links).forEach((link, index) => {
             if (link.href) {
-                // Astuce : On attend 150ms * index avant d'ouvrir
-                // Le 1er s'ouvre à 0ms, le 2ème à 150ms, le 3ème à 300ms...
                 setTimeout(() => {
                     window.open(link.href, '_blank');
                 }, 150 * index);
@@ -871,55 +755,28 @@ function openAllLinks(widgetId) {
         });
     }
 
-// --- DRAG & DROP : PAGES (Onglets) ---
-    var navContainer = document.getElementById('main-nav');
-    if (navContainer) {
-        new Sortable(navContainer, {
-            animation: 150,
-            draggable: 'a', // On ne déplace que les liens (pas les boutons + / edit)
-            ghostClass: 'bg-gray-600',
-            onEnd: function (evt) {
-                var itemEl = evt.item;
-                // On récupère tous les liens <a> qui ont un data-id
-                // (pour ignorer les boutons d'actions statiques)
-                var listItems = navContainer.querySelectorAll('a[data-id]');
-                var pageIds = Array.from(listItems).map(el => el.getAttribute('data-id'));
-
-                var formData = new FormData();
-                pageIds.forEach(id => formData.append('page', id));
-
-                fetch('/api/update-page-order/', { method: 'POST', body: formData });
-            }
-        });
-    }
-
-
-// --- RECHERCHE INSTANTANÉE (Live Search) ---
+    // --- LIVE SEARCH ---
     function liveSearch() {
-        // 1. On récupère le texte tapé, en minuscules
         let input = document.getElementById('search-input');
         let filter = input.value.toLowerCase();
-
-        // 2. On récupère tous les widgets
-        let widgets = document.querySelectorAll('.group\\/widget'); // Échappement du slash Tailwind
+        let widgets = document.querySelectorAll('.group\\/widget');
 
         widgets.forEach(function(widget) {
             let widgetMatch = false;
 
-            // A. Vérifier le TITRE du Widget
+            // Check Title
             let titleEl = widget.querySelector('h3, h2, .font-bold');
             if (titleEl && titleEl.innerText.toLowerCase().includes(filter)) {
                 widgetMatch = true;
             }
 
-            // B. Vérifier les LIENS (s'il y en a)
+            // Check Links
             let links = widget.querySelectorAll('li');
             let hasVisibleLink = false;
 
             links.forEach(function(link) {
                 let text = link.innerText.toLowerCase();
                 if (text.includes(filter) || widgetMatch) {
-                    // Si le lien matche OU que le titre du widget matche, on affiche le lien
                     link.style.display = "";
                     hasVisibleLink = true;
                 } else {
@@ -927,20 +784,15 @@ function openAllLinks(widgetId) {
                 }
             });
 
-            // C. Vérifier le BLOC-NOTES (s'il y en a un)
+            // Check Notes
             let note = widget.querySelector('textarea');
             if (note) {
                 let noteText = note.value.toLowerCase();
                 if (noteText.includes(filter) || widgetMatch) {
-                    hasVisibleLink = true; // On considère la note comme un lien visible
+                    hasVisibleLink = true;
                 }
             }
 
-            // D. Décision finale pour le WIDGET
-            // On l'affiche si :
-            // 1. Le titre du widget matche
-            // 2. OU s'il contient au moins un lien/note visible
-            // 3. OU si la recherche est vide (on réinitialise tout)
             if (widgetMatch || hasVisibleLink || filter === "") {
                 widget.style.display = "";
             } else {
@@ -948,7 +800,29 @@ function openAllLinks(widgetId) {
             }
         });
     }
-</script>
 
+    // --- REINIT SORTABLE APRES HTMX LOAD ---
+    htmx.onLoad(function(content) {
+        var sortables = content.querySelectorAll('.sortable-list');
+        sortables.forEach(function(list) {
+             new Sortable(list, {
+                group: 'shared',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    var targetList = evt.to;
+                    var widgetId = targetList.getAttribute('data-widget-id');
+                    var listItems = targetList.querySelectorAll('li');
+                    var linkIds = Array.from(listItems).map(li => li.getAttribute('data-id'));
+                    var formData = new FormData();
+                    formData.append('widget_id', widgetId);
+                    linkIds.forEach(id => formData.append('link', id));
+                    fetch('/api/update-order/', { method: 'POST', body: formData });
+                }
+            });
+        });
+    });
+
+</script>
 </body>
 </html>

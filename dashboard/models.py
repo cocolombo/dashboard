@@ -3,7 +3,6 @@ from django.utils import timezone
 import requests                                 # ← juste ça, rien d’autre
 from django.core.cache import cache       # ← pour ton modèle Calendar
 
-
 class Page(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
@@ -15,12 +14,12 @@ class Page(models.Model):
     def __str__(self):
         return self.name
 
-
 class Widget(models.Model):
     # Choix du type de widget
     TYPE_CHOICES = [
         ('list', 'Liste de liens'),
         ('note', 'Bloc-notes'),
+        ('command', 'Lanceur de scripts'),
     ]
 
     title = models.CharField(max_length=100)

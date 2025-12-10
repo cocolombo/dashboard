@@ -14,8 +14,6 @@ from datetime import datetime
 from django.conf import settings
 from django.http import FileResponse
 
-
-
 def index(request, slug=None):
     """
     Affiche la page principale du tableau de bord (Dashboard).
@@ -595,3 +593,36 @@ def download_backup(request):
     # 5. Envoi du fichier
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename=filename)
+
+
+def run_command(request, link_id):
+    """
+    Exécute la commande stockée dans le champ 'url' du lien.
+    Ouvre une fenêtre de terminal pour voir le résultat.
+    """
+    link = get_object_or_404(Link, id=link_id)
+    command = link.url.strip()
+
+    if not command:
+        return HttpResponse(status=400)
+
+    try:
+        # La commande magique pour Ubuntu :
+        # 1. On ouvre gnome-terminal
+        # 2. On lance bash
+        # 3. On exécute votre commande
+        # 4. On ajoute "; read" pour que la fenêtre ne se ferme pas tout de suite à la fin
+        full_cmd = [
+            'gnome-terminal',
+            '--',
+            'bash',
+            '-c',
+            f"{command}; echo ''; read -p 'Appuyez sur Entrée pour fermer...' variable"
+        ]
+
+        subprocess.Popen(full_cmd)
+        return HttpResponse(status=204)  # Succès silencieux
+    except FileNotFoundError:
+        print("Erreur : gnome-terminal n'est pas installé.")
+        return HttpResponse(status=500)
+

@@ -364,6 +364,25 @@ def rename_widget(request, pk):
 
 
 def edit_link(request, pk):
+    """
+    Vue pour éditer un objet Link.
+
+    Cette vue gère les requêtes GET et POST pour l'édition d'un objet Link.
+
+    Args:
+        request (HttpRequest): L'objet HttpRequest contenant les informations de la requête HTTP.
+        pk (int): La clé primaire (primary key) de l'objet Link à éditer.
+
+    Returns:
+        HttpResponse: Un objet HttpResponse contenant le rendu d'une template HTML ou une redirection vers une autre URL.
+
+    Raises:
+        Http404: Si l'objet Link correspondant à la clé primaire ne peut pas être trouvé.
+
+    Notes:
+        - Si la requête est de type POST, les champs 'title' et 'url' de l'objet Link sont mis à jour avec les valeurs envoyées par le client.
+        - En fonction du widget_type de l'objet Link, soit un bouton (command_item.html) soit une ligne de liste (link_item.html) sera rendu.
+    """
     link = get_object_or_404(Link, pk=pk)
 
     if request.method == "POST":
@@ -382,6 +401,19 @@ def edit_link(request, pk):
 
     # Si GET, on renvoie le formulaire d'édition
     return render(request, 'partials/link_form.html', {'link': link})
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # dashboard/views.py
 
@@ -528,11 +560,58 @@ def update_page_order(request):
     return HttpResponse(status=200)
 
 
+# def download_backup(request):
+#     """
+#     Crée une archive ZIP du projet complet (en excluant les dossiers lourds/inutiles)
+#     et la renvoie au navigateur pour téléchargement immédiat.
+#     """
+#     # 1. Préparation du fichier en mémoire (pas d'écriture sur le disque du serveur)
+#     buffer = io.BytesIO()
+#
+#     # 2. Nom du fichier avec la date (ex: backup_startme_2025-12-02_14h30.zip)
+#     timestamp = datetime.now().strftime('%Y-%m-%d_%Hh%M')
+#     filename = f"backup_startme_{timestamp}.zip"
+#
+#     # 3. Dossiers à ignorer absolument
+#     # .venv / venv : L'environnement virtuel (très lourd et recréable)
+#     # .git : L'historique de version (lourd et déjà sur Github)
+#     # __pycache__ : Fichiers compilés python inutiles
+#     # .idea : Configuration PyCharm (optionnel, souvent perso)
+#     EXCLUDE_DIRS = {'.venv', 'venv', '.git', '__pycache__', '.idea'}
+#
+#     # 4. Création du ZIP
+#     with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+#         # On parcourt tout le dossier du projet (BASE_DIR)
+#         for root, dirs, files in os.walk(settings.BASE_DIR):
+#             # Filtrage des dossiers interdits (modification de la liste 'dirs' en place)
+#             dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+#
+#             for file in files:
+#                 # On ignore aussi les fichiers compilés individuels et la db si elle est verrouillée (optionnel)
+#                 if file.endswith(('.pyc', '.pyo', '.log')):
+#                     continue
+#
+#                 # Chemin complet sur le disque
+#                 file_path = os.path.join(root, file)
+#
+#                 # Chemin relatif à l'intérieur du ZIP (pour garder la structure)
+#                 # ex: /home/nimzo/.../startme/manage.py devient startme/manage.py
+#                 archive_name = os.path.relpath(file_path, settings.BASE_DIR)
+#
+#                 try:
+#                     zip_file.write(file_path, archive_name)
+#                 except PermissionError:
+#                     continue  # On saute les fichiers qu'on n'a pas le droit de lire
+#
+#     # 5. Envoi du fichier
+#     buffer.seek(0)
+#     return FileResponse(buffer, as_attachment=True, filename=filename)
 def download_backup(request):
     """
     Crée une archive ZIP du projet complet (en excluant les dossiers lourds/inutiles)
     et la renvoie au navigateur pour téléchargement immédiat.
     """
+
     # 1. Préparation du fichier en mémoire (pas d'écriture sur le disque du serveur)
     buffer = io.BytesIO()
 
@@ -575,6 +654,127 @@ def download_backup(request):
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename=filename)
 
+# def run_command(request, link_id):
+#     link = get_object_or_404(Link, id=link_id)
+#     command = link.url.strip()
+#
+#     print(f"--- TENTATIVE D'EXÉCUTION : {command} ---")
+#
+#     if not command:
+#         return HttpResponse(status=400)
+#
+#     # 1. On cherche le terminal disponible
+#     # On préfère gnome-terminal, sinon on prend xterm, sinon on essaie 'konsole' (KDE)
+#     terminal_path = shutil.which('gnome-terminal') or shutil.which('xterm') or shutil.which('konsole')
+#
+#     if not terminal_path:
+#         print("ERREUR: Aucun terminal compatible trouvé.")
+#         return HttpResponse(status=500)
+#
+#     try:
+#         # La commande bash à exécuter à l'intérieur
+#         bash_cmd = f"{command}; echo ''; read -p 'Appuyez sur Entrée pour fermer...' variable"
+#
+#         # 2. On adapte la syntaxe selon le terminal trouvé
+#         if 'gnome-terminal' in terminal_path:
+#             # Syntaxe Gnome : gnome-terminal -- bash -c "..."
+#             full_cmd = [terminal_path, '--', 'bash', '-c', bash_cmd]
+#
+#         elif 'xterm' in terminal_path:
+#             # Syntaxe Xterm : xterm -fa 'Monospace' -fs 10 -geometry 100x30 -e bash -c "..."
+#             # J'ajoute -fa et -geometry pour que xterm soit moins moche et plus grand
+#             full_cmd = [terminal_path, '-fa', 'Monospace', '-fs', '11', '-geometry', '130x40', '-e', 'bash', '-c',
+#                         bash_cmd]
+#
+#         elif 'konsole' in terminal_path:
+#             # Syntaxe Konsole (si jamais)
+#             full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
+#
+#         else:
+#             # Par défaut on tente le -e standard
+#             full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
+#
+#         # 3. Exécution
+#         subprocess.Popen(full_cmd)
+#         print(f"SUCCÈS: Terminal lancé ({terminal_path})")
+#         return HttpResponse(status=204)
+#
+#     except Exception as e:
+#         print(f"ERREUR CRITIQUE: {e}")
+#         return HttpResponse(status=500)
+
+
+# def run_command(request, link_id):
+#     """
+#     Cette fonction est utilisée pour exécuter des commandes shell à
+#     partir d'une interface web. Elle vérifie la disponibilité d'un
+#     terminal sur le serveur, prépare et exécute une commande bash
+#     dans ce terminal, puis retourne une réponse HTTP appropriée
+#     au client.
+#     """
+#     # Récupère l'objet Link correspondant à l'id fourni ou retourne une erreur 404 si non trouvé
+#     link = get_object_or_404(Link, id=link_id)
+#
+#     # Supprime les espaces en début et fin de la commande stockée dans le champ 'url' du modèle Link
+#     command = link.url.strip()
+#
+#     # Imprime un message indiquant la tentative d'exécution de la commande
+#     print(f"--- TENTATIVE D'EXÉCUTION : {command} ---")
+#
+#     # Si la commande est vide, retourne une erreur 400 (Bad Request)
+#     if not command:
+#         return HttpResponse(status=400)
+#
+#     # Recherche le chemin vers un terminal compatible
+#     # Préférence donnée à 'gnome-terminal', sinon utilise 'xterm' ou 'konsole'
+#     terminal_path = shutil.which('gnome-terminal') or shutil.which('xterm') or shutil.which('konsole')
+#
+#     # Si aucun terminal n'est trouvé, imprime un message d'erreur et retourne une erreur 500 (Internal Server Error)
+#     if not terminal_path:
+#         print("ERREUR: Aucun terminal compatible trouvé.")
+#         return HttpResponse(status=500)
+#
+#     try:
+#         # Construit la commande bash à exécuter
+#         # La commande fournie est suivie d'un echo vide et une attente de l'utilisateur pour fermer le terminal
+#         bash_cmd = f"{command}; echo ''; read -p 'Appuyez sur Entrée pour fermer...' variable"
+#
+#         # Construit la commande complète en fonction du terminal trouvé
+#         if 'gnome-terminal' in terminal_path:
+#             # Syntaxe pour gnome-terminal
+#             full_cmd = [terminal_path, '--', 'bash', '-c', bash_cmd]
+#
+#         elif 'xterm' in terminal_path:
+#             # Syntaxe pour xterm avec quelques options pour améliorer l'apparence
+#             full_cmd = [terminal_path, '-fa', 'Monospace', '-fs', '11', '-geometry', '130x40', '-e', 'bash', '-c',
+#                         bash_cmd]
+#
+#         elif 'konsole' in terminal_path:
+#             # Syntaxe pour konsole
+#             full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
+#
+#         else:
+#             # Syntaxe par défaut si le terminal n'est pas reconnu
+#             full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
+#
+#         # Exécute la commande dans un nouveau processus
+#         subprocess.Popen(full_cmd)
+#
+#         # Imprime un message de succès avec le chemin du terminal utilisé
+#         print(f"SUCCÈS: Terminal lancé ({terminal_path})")
+#
+#         # Retourne une réponse HTTP 204 (No Content), indiquant que la requête a réussi sans contenu à retourner
+#         return HttpResponse(status=204)
+#
+#     except Exception as e:
+#         # En cas d'erreur inattendue, imprime le message d'erreur et retourne une erreur 500
+#         print(f"ERREUR CRITIQUE: {e}")
+#         return HttpResponse(status=500)
+
+
+import subprocess
+import shutil
+
 
 def run_command(request, link_id):
     link = get_object_or_404(Link, id=link_id)
@@ -585,8 +785,7 @@ def run_command(request, link_id):
     if not command:
         return HttpResponse(status=400)
 
-    # 1. On cherche le terminal disponible
-    # On préfère gnome-terminal, sinon on prend xterm, sinon on essaie 'konsole' (KDE)
+    # 1. Détection du terminal (Gnome > Xterm > Konsole)
     terminal_path = shutil.which('gnome-terminal') or shutil.which('xterm') or shutil.which('konsole')
 
     if not terminal_path:
@@ -594,33 +793,48 @@ def run_command(request, link_id):
         return HttpResponse(status=500)
 
     try:
-        # La commande bash à exécuter à l'intérieur
-        bash_cmd = f"{command}; echo ''; read -p 'Appuyez sur Entrée pour fermer...' variable"
+        # 2. Construction du script Bash robuste
+        # - On exécute la commande de l'utilisateur.
+        # - On capture le code de retour ($?).
+        # - Si échec (code != 0), on affiche un message ROUGE.
+        # - Si succès, on affiche un message VERT.
+        # - Le 'read' final garantit que la fenêtre reste ouverte.
 
-        # 2. On adapte la syntaxe selon le terminal trouvé
+        script_bash = f"""
+        {command}
+        EXIT_CODE=$?
+        echo ""
+        if [ $EXIT_CODE -ne 0 ]; then
+            echo -e "\\033[1;31m⚠️  ERREUR CRITIQUE : La commande a échoué (Code $EXIT_CODE)\\033[0m"
+            echo -e "\\033[1;31m    Vérifiez la syntaxe ou les logs ci-dessus.\\033[0m"
+        else
+            echo -e "\\033[1;32m✅  SUCCÈS : Commande terminée sans erreur.\\033[0m"
+        fi
+        echo ""
+        read -p "Appuyez sur Entrée pour fermer ce terminal..."
+        """
+
+        # 3. Adaptation selon le terminal (Syntaxe d'appel)
         if 'gnome-terminal' in terminal_path:
-            # Syntaxe Gnome : gnome-terminal -- bash -c "..."
-            full_cmd = [terminal_path, '--', 'bash', '-c', bash_cmd]
+            # Note : On passe le script comme un seul argument à bash -c
+            full_cmd = [terminal_path, '--', 'bash', '-c', script_bash]
 
         elif 'xterm' in terminal_path:
-            # Syntaxe Xterm : xterm -fa 'Monospace' -fs 10 -geometry 100x30 -e bash -c "..."
-            # J'ajoute -fa et -geometry pour que xterm soit moins moche et plus grand
             full_cmd = [terminal_path, '-fa', 'Monospace', '-fs', '11', '-geometry', '130x40', '-e', 'bash', '-c',
-                        bash_cmd]
+                        script_bash]
 
         elif 'konsole' in terminal_path:
-            # Syntaxe Konsole (si jamais)
-            full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
+            full_cmd = [terminal_path, '-e', 'bash', '-c', script_bash]
 
         else:
-            # Par défaut on tente le -e standard
-            full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
+            full_cmd = [terminal_path, '-e', 'bash', '-c', script_bash]
 
-        # 3. Exécution
+        # 4. Exécution sécurisée
+        # L'utilisation d'une liste pour full_cmd empêche l'injection de commande au niveau du système hôte (Python).
         subprocess.Popen(full_cmd)
-        print(f"SUCCÈS: Terminal lancé ({terminal_path})")
+
         return HttpResponse(status=204)
 
     except Exception as e:
-        print(f"ERREUR CRITIQUE: {e}")
+        print(f"ERREUR CRITIQUE PYTHON: {e}")
         return HttpResponse(status=500)

@@ -1,0 +1,41 @@
+<!-- Menu pour les liens -->
+<div id="context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-xl w-56 py-1 text-sm">
+    <div class="px-4 py-2 font-bold border-b border-gray-700 text-gray-400 text-xs uppercase">Actions</div>
+    <div class="relative group">
+            <button class="w-full text-left px-4 py-2 hover:bg-blue-600 flex justify-between items-center">
+                Déplacer vers... <span>▶</span>
+            </button>
+            <div class="absolute left-full top-0 w-48 bg-gray-800 border border-gray-600 shadow-lg hidden group-hover:block rounded-r">
+                {% for page in pages %}
+                    {% if page != active_page %}
+                    <form hx-post="{% url 'move_link' 0 %}" hx-trigger="click" hx-swap="none">
+                        <input type="hidden" name="target_page_id" value="{{ page.id }}">
+                        <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-600 border-b border-gray-700 last:border-0">
+                            {{ page.name }}
+                        </button>
+                    </form>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+<!-- Menu pour les widgets (catégories) -->
+<div id="widget-context-menu" class="bg-gray-800 border border-gray-600 text-gray-200 rounded shadow-2xl w-56 py-1 text-sm fixed z-50 hidden">
+    <!-- ... Options du menu contextuel pour les widgets ... -->
+    <div class="px-4 py-2 font-bold border-b border-gray-700 text-orange-400 text-xs uppercase bg-gray-900">
+            Déplacer la catégorie vers...
+        </div>
+        {% for page in pages %}
+            {% if page != active_page %}
+            <form action="{% url 'move_widget' 0 %}" method="POST" class="widget-move-form">
+                {% csrf_token %}
+                <input type="hidden" name="target_page_id" value="{{ page.id }}">
+                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-blue-600 border-b border-gray-700 last:border-0 flex justify-between group">
+                    {{ page.name }}
+                    <span class="hidden group-hover:inline">➔</span>
+                </button>
+            </form>
+            {% endif %}
+        {% endfor %}
+</div>

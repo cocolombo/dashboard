@@ -1,0 +1,115 @@
+<!-- Modale : Ajouter une page -->
+<div id="modal-add-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+    <!-- ... Formulaire d'ajout de page ... -->
+    <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+            <h2 class="text-xl font-bold text-white mb-4">Nouvelle Page</h2>
+            <form action="{% url 'create_page' %}" method="POST">
+                {% csrf_token %}
+                <label class="block text-gray-400 text-sm mb-2">Nom de la page</label>
+                <input type="text" name="name" required autofocus
+                       class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
+                       placeholder="Ex: Cuisine, Voyage...">
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="toggleModal('modal-add-page')"
+                            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% if active_page %}
+    <!-- Modale : Renommer la page -->
+    <div id="modal-rename-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <!-- ... Formulaire de renommage de page ... -->
+        <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+            <h2 class="text-xl font-bold text-white mb-4">Renommer la page</h2>
+            <form action="{% url 'rename_page' active_page.id %}" method="POST">
+                {% csrf_token %}
+                <label class="block text-gray-400 text-sm mb-2">Nouveau nom</label>
+                <input type="text" name="name" required value="{{ active_page.name }}"
+                       class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-yellow-500 focus:outline-none">
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="toggleModal('modal-rename-page')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded font-bold">Renommer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modale : Supprimer la page -->
+    <div id="modal-delete-page" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <!-- ... Confirmation de suppression de page ... -->
+        <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
+            <h2 class="text-xl font-bold text-white mb-2">Supprimer la page ?</h2>
+            <p class="text-gray-300 mb-6">
+                Voulez-vous vraiment supprimer <strong>"{{ active_page.name }}"</strong> ?<br>
+                Tous les widgets et les liens à l'intérieur seront perdus.
+            </p>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="toggleModal('modal-delete-page')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                <a href="{% url 'delete_page' active_page.id %}" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">Confirmer</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale : Ajouter une catégorie (widget) -->
+    <div id="modal-add-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <!-- ... Formulaire d'ajout de widget ... -->
+        <div class="bg-gray-800 border border-gray-600 p-6 rounded-lg shadow-2xl w-96">
+            <h2 class="text-xl font-bold text-white mb-4">Nouvelle Catégorie</h2>
+
+            <form action="{% url 'add_widget' active_page.id %}" method="POST">
+                {% csrf_token %}
+
+                <label class="block text-gray-400 text-sm mb-2">Titre de la catégorie</label>
+                <input type="text" name="title" required autofocus
+                       class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none"
+                       placeholder="Ex: Sports, Notes...">
+
+                <label class="block text-gray-400 text-sm mb-2">Type de contenu</label>
+                <select name="widget_type" class="w-full bg-gray-900 text-white border border-gray-600 rounded p-2 mb-4 focus:border-blue-500 focus:outline-none">
+                    <option value="list">Liste de liens</option>
+                    <option value="note">Bloc-notes</option>
+                    <option value="command">Lanceur de scripts</option>
+                </select>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="toggleModal('modal-add-widget')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modale : Supprimer un widget -->
+    <div id="modal-delete-widget" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+        <!-- ... Confirmation de suppression de widget ... -->
+        <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
+            <h2 class="text-xl font-bold text-white mb-2">Supprimer la catégorie ?</h2>
+            <p class="text-gray-300 mb-6">
+                Cette action est irréversible. Tous les liens contenus dans cette catégorie seront perdus.
+            </p>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="toggleModal('modal-delete-widget')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                <a id="btn-confirm-delete-widget" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">Confirmer</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale : Supprimer un lien -->
+    <div id="modal-delete-link" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 flex justify-center items-center backdrop-blur-sm">
+       <!-- ... Confirmation de suppression de lien ... -->
+        <div class="bg-gray-800 border border-red-900/50 p-6 rounded-lg shadow-2xl w-96 border-l-4 border-l-red-600">
+            <h2 class="text-xl font-bold text-white mb-2">Supprimer ce lien ?</h2>
+            <p class="text-gray-300 mb-6">
+                Voulez-vous vraiment retirer ce lien de votre tableau de bord ?
+            </p>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="toggleModal('modal-delete-link')" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Annuler</button>
+                <a id="btn-confirm-delete-link" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded font-bold flex items-center">Confirmer</a>
+            </div>
+        </div>
+    </div>
+
+{% endif %}

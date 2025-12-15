@@ -16,19 +16,18 @@ from django.conf import settings
 from django.http import FileResponse
 
 def index(request, slug=None):
-    """
-    Affiche la page principale du tableau de bord (Dashboard).
+    """Affiche la page principale du tableau de bord.
 
-    Cette vue gère l'affichage des onglets (Pages) et du contenu de la page active
-    (Widgets et Liens).
+    Cette vue récupère toutes les pages pour la navigation et détermine
+    la page active en se basant sur le 'slug' fourni dans l'URL. Si aucun
+    slug n'est fourni, la première page est affichée par défaut.
 
     Args:
-        request (HttpRequest): L'objet de requête HTTP.
-        slug (str, optional): Le slug de la page à afficher.
-                              Si None, la première page disponible est affichée.
+        request (HttpRequest): L'objet de requête Django.
+        slug (str, optional): Le slug de la page à afficher. Defaults to None.
 
     Returns:
-        HttpResponse: La page HTML rendue avec le contexte (pages, active_page).
+        HttpResponse: La page HTML du tableau de bord rendue avec le contexte.
     """
     pages = Page.objects.all()
     if not slug:
@@ -46,20 +45,19 @@ def index(request, slug=None):
 @csrf_exempt
 @require_POST
 def update_link_order(request):
-    """
-    API pour mettre à jour l'ordre et le parent des liens via Drag & Drop.
+    """Met à jour l'ordre et l'appartenance des liens après un glisser-déposer.
 
-    Appelée par SortableJS lorsqu'un lien est déplacé. Elle gère deux cas :
-    1. Réorganisation au sein du même widget.
-    2. Déplacement d'un lien vers un autre widget.
+    Cette API est appelée par HTMX/SortableJS. Elle met à jour l'attribut 'order'
+    de chaque lien et peut changer le widget parent si un lien est déplacé
+    vers une autre catégorie.
 
     Args:
-        request (HttpRequest): Requête POST contenant :
-            - widget_id (str): L'ID du widget de destination.
-            - link (list): Liste ordonnée des IDs des liens dans ce widget.
+        request (HttpRequest): La requête POST doit contenir :
+            - 'widget_id' (int): L'ID du widget de destination.
+            - 'link' (list[int]): Une liste des IDs des liens dans leur nouvel ordre.
 
     Returns:
-        HttpResponse: Statut 200 si succès.
+        HttpResponse: Un statut 200 OK si la mise à jour réussit.
     """
     # 1. On récupère l'ID du widget dans lequel le lien a atterri
     widget_id = request.POST.get('widget_id')
@@ -89,14 +87,13 @@ def update_link_order(request):
 @csrf_exempt
 @require_POST
 def update_widget_order(request):
-    """
-    API pour mettre à jour l'ordre des widgets (catégories) sur une page.
+    """Met à jour l'ordre des widgets (catégories) sur une page.
 
     Appelée par SortableJS lors du déplacement d'un bloc widget entier.
 
     Args:
-        request (HttpRequest): Requête POST contenant :
-            - widget (list): Liste ordonnée des IDs des widgets.
+        request (HttpRequest): La requête POST doit contenir :
+            - 'widget' (list[int]): Liste ordonnée des IDs des widgets.
 
     Returns:
         HttpResponse: Statut 200 si succès.
@@ -117,13 +114,12 @@ def update_widget_order(request):
 @csrf_exempt
 @require_POST
 def move_link_to_page(request, link_id):
-    """
-    API pour déplacer un lien vers une autre page via le menu contextuel.
+    """Déplace un lien vers une autre page via le menu contextuel.
 
     Le lien est déplacé vers le premier widget disponible de la page cible.
 
     Args:
-        request (HttpRequest): Requête POST contenant 'target_page_id'.
+        request (HttpRequest): La requête POST doit contenir 'target_page_id'.
         link_id (int): L'ID du lien à déplacer.
 
     Returns:
@@ -145,11 +141,10 @@ def move_link_to_page(request, link_id):
 
 @require_POST
 def add_link(request, widget_id):
-    """
-    Ajoute un nouveau lien dans un widget spécifique.
+    """Ajoute un nouveau lien dans un widget spécifique.
 
     Args:
-        request (HttpRequest): Requête POST contenant 'title' et 'url'.
+        request (HttpRequest): La requête POST doit contenir 'title' et 'url'.
         widget_id (int): L'ID du widget parent.
 
     Returns:
@@ -167,8 +162,7 @@ def add_link(request, widget_id):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def delete_link(request, link_id):
-    """
-    Supprime un lien spécifique.
+    """Supprime un lien spécifique.
 
     Args:
         request (HttpRequest): L'objet de requête.
@@ -184,13 +178,12 @@ def delete_link(request, link_id):
 
 @require_POST
 def create_page(request):
-    """
-    Crée une nouvelle page (onglet) dans le tableau de bord.
+    """Crée une nouvelle page (onglet) dans le tableau de bord.
 
     Gère la création automatique d'un slug unique basé sur le nom.
 
     Args:
-        request (HttpRequest): Requête POST contenant 'name'.
+        request (HttpRequest): La requête POST doit contenir 'name'.
 
     Returns:
         HttpResponseRedirect: Redirige vers la nouvelle page créée.
@@ -218,13 +211,12 @@ def create_page(request):
 
 @require_POST
 def rename_page(request, page_id):
-    """
-    Renomme une page existante.
+    """Renomme une page existante.
 
     Met à jour le nom et régénère le slug pour garder l'URL cohérente.
 
     Args:
-        request (HttpRequest): Requête POST contenant le nouveau 'name'.
+        request (HttpRequest): La requête POST doit contenir le nouveau 'name'.
         page_id (int): L'ID de la page à modifier.
 
     Returns:
@@ -244,8 +236,7 @@ def rename_page(request, page_id):
 
 
 def delete_page(request, page_id):
-    """
-    Supprime une page complète et tout son contenu (widgets/liens).
+    """Supprime une page complète et tout son contenu (widgets/liens).
 
     Args:
         request (HttpRequest): L'objet de requête.
@@ -261,11 +252,10 @@ def delete_page(request, page_id):
 
 @require_POST
 def move_widget_to_page(request, widget_id):
-    """
-    Déplace un widget (catégorie) entier vers une autre page.
+    """Déplace un widget (catégorie) entier vers une autre page.
 
     Args:
-        request (HttpRequest): Requête POST contenant 'target_page_id'.
+        request (HttpRequest): La requête POST doit contenir 'target_page_id'.
         widget_id (int): L'ID du widget à déplacer.
 
     Returns:
@@ -286,8 +276,7 @@ def move_widget_to_page(request, widget_id):
 
 
 def delete_widget(request, widget_id):
-    """
-    Supprime un widget (catégorie) et tous les liens ou notes qu'il contient.
+    """Supprime un widget (catégorie) et tous les liens ou notes qu'il contient.
 
     Args:
         request (HttpRequest): L'objet de requête.
@@ -303,13 +292,12 @@ def delete_widget(request, widget_id):
 
 @require_POST
 def add_widget(request, page_id):
-    """
-    Ajoute une nouvelle catégorie (Widget) sur une page spécifique.
+    """Ajoute une nouvelle catégorie (Widget) sur une page spécifique.
 
     Prend en compte le type de widget sélectionné (Liste ou Bloc-notes).
 
     Args:
-        request (HttpRequest): Requête POST contenant 'title' et 'widget_type'.
+        request (HttpRequest): La requête POST doit contenir 'title' et 'widget_type'.
         page_id (int): L'ID de la page parente.
 
     Returns:
@@ -333,19 +321,19 @@ def add_widget(request, page_id):
 
 
 def rename_widget(request, pk):
-    """
-    Gère l'affichage et la mise à jour du titre d'un widget (Mode édition In-Line).
+    """Gère l'édition en ligne du titre d'un widget.
 
-    Utilisé par HTMX.
-    - GET : Renvoie le formulaire d'édition du titre.
-    - POST : Met à jour le titre et renvoie le titre affiché (HTML).
+    Cette vue a un double comportement en fonction de la méthode HTTP :
+    - GET : Renvoie un fragment HTML contenant un formulaire pour éditer le titre.
+    - POST : Met à jour le titre du widget en base de données et renvoie
+      le fragment HTML du titre mis à jour.
 
     Args:
-        request (HttpRequest): L'objet de requête.
-        pk (int): La clé primaire (ID) du widget.
+        request (HttpRequest): La requête HTTP (GET ou POST).
+        pk (int): La clé primaire du widget à modifier.
 
     Returns:
-        HttpResponse: Le fragment HTML (Partial) correspondant à l'état (formulaire ou titre).
+        HttpResponse: Un fragment HTML (soit le formulaire, soit le titre).
     """
     widget = get_object_or_404(Widget, pk=pk)
 
@@ -364,8 +352,7 @@ def rename_widget(request, pk):
 
 
 def edit_link(request, pk):
-    """
-    Vue pour éditer un objet Link.
+    """Gère l'édition d'un objet Link.
 
     Cette vue gère les requêtes GET et POST pour l'édition d'un objet Link.
 
@@ -403,22 +390,15 @@ def edit_link(request, pk):
     return render(request, 'partials/link_form.html', {'link': link})
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 # dashboard/views.py
 
 def get_gpu_stats():
-    """Récupère VRAM et Température via nvidia-smi sans librairie tierce."""
+    """Récupère VRAM et Température via nvidia-smi sans librairie tierce.
+
+    Returns:
+        dict: Un dictionnaire contenant 'temp', 'used', 'total', 'percent' si succès.
+        None: Si la commande échoue (pas de GPU Nvidia ou driver manquant).
+    """
     try:
         # On demande : température, mémoire utilisée, mémoire totale
         cmd = "nvidia-smi --query-gpu=temperature.gpu,memory.used,memory.total --format=csv,noheader,nounits"
@@ -435,8 +415,7 @@ def get_gpu_stats():
 
 
 def system_monitor(request):
-    """
-    Récupère les métriques du système (CPU, GPU, RAM, Disque) pour le widget de monitoring.
+    """Récupère les métriques du système (CPU, GPU, RAM, Disque) pour le widget de monitoring.
 
     Cette vue est appelée périodiquement par HTMX (Polling).
 
@@ -487,13 +466,12 @@ def system_monitor(request):
 
 @require_POST
 def save_note_content(request, widget_id):
-    """
-    Sauvegarde automatiquement le contenu textuel d'un widget 'Bloc-notes'.
+    """Sauvegarde automatiquement le contenu textuel d'un widget 'Bloc-notes'.
 
     Déclenché par HTMX lors de la frappe ou de la perte de focus.
 
     Args:
-        request (HttpRequest): Requête POST contenant 'content'.
+        request (HttpRequest): La requête POST doit contenir 'content'.
         widget_id (int): L'ID du widget.
 
     Returns:
@@ -509,8 +487,7 @@ def save_note_content(request, widget_id):
 
 
 def open_local_file(request, link_id):
-    """
-    Ouvre un fichier ou dossier local sur le serveur (l'ordinateur de l'utilisateur).
+    """Ouvre un fichier ou dossier local sur le serveur (l'ordinateur de l'utilisateur).
 
     Utilise la commande système `xdg-open` pour contourner les restrictions de sécurité
     des navigateurs concernant les liens `file://`.
@@ -544,8 +521,13 @@ def open_local_file(request, link_id):
 @csrf_exempt
 @require_POST
 def update_page_order(request):
-    """
-    API pour réorganiser les pages (onglets) via Drag & Drop.
+    """API pour réorganiser les pages (onglets) via Drag & Drop.
+
+    Args:
+        request (HttpRequest): La requête POST doit contenir 'page' (liste d'IDs).
+
+    Returns:
+        HttpResponse: Statut 200 si succès.
     """
     page_ids = request.POST.getlist('page')
 
@@ -560,56 +542,16 @@ def update_page_order(request):
     return HttpResponse(status=200)
 
 
-# def download_backup(request):
-#     """
-#     Crée une archive ZIP du projet complet (en excluant les dossiers lourds/inutiles)
-#     et la renvoie au navigateur pour téléchargement immédiat.
-#     """
-#     # 1. Préparation du fichier en mémoire (pas d'écriture sur le disque du serveur)
-#     buffer = io.BytesIO()
-#
-#     # 2. Nom du fichier avec la date (ex: backup_startme_2025-12-02_14h30.zip)
-#     timestamp = datetime.now().strftime('%Y-%m-%d_%Hh%M')
-#     filename = f"backup_startme_{timestamp}.zip"
-#
-#     # 3. Dossiers à ignorer absolument
-#     # .venv / venv : L'environnement virtuel (très lourd et recréable)
-#     # .git : L'historique de version (lourd et déjà sur Github)
-#     # __pycache__ : Fichiers compilés python inutiles
-#     # .idea : Configuration PyCharm (optionnel, souvent perso)
-#     EXCLUDE_DIRS = {'.venv', 'venv', '.git', '__pycache__', '.idea'}
-#
-#     # 4. Création du ZIP
-#     with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-#         # On parcourt tout le dossier du projet (BASE_DIR)
-#         for root, dirs, files in os.walk(settings.BASE_DIR):
-#             # Filtrage des dossiers interdits (modification de la liste 'dirs' en place)
-#             dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
-#
-#             for file in files:
-#                 # On ignore aussi les fichiers compilés individuels et la db si elle est verrouillée (optionnel)
-#                 if file.endswith(('.pyc', '.pyo', '.log')):
-#                     continue
-#
-#                 # Chemin complet sur le disque
-#                 file_path = os.path.join(root, file)
-#
-#                 # Chemin relatif à l'intérieur du ZIP (pour garder la structure)
-#                 # ex: /home/nimzo/.../startme/manage.py devient startme/manage.py
-#                 archive_name = os.path.relpath(file_path, settings.BASE_DIR)
-#
-#                 try:
-#                     zip_file.write(file_path, archive_name)
-#                 except PermissionError:
-#                     continue  # On saute les fichiers qu'on n'a pas le droit de lire
-#
-#     # 5. Envoi du fichier
-#     buffer.seek(0)
-#     return FileResponse(buffer, as_attachment=True, filename=filename)
 def download_backup(request):
-    """
-    Crée une archive ZIP du projet complet (en excluant les dossiers lourds/inutiles)
-    et la renvoie au navigateur pour téléchargement immédiat.
+    """Crée une archive ZIP du projet complet et la renvoie pour téléchargement.
+
+    Exclut les dossiers lourds ou inutiles (.venv, .git, __pycache__, etc.).
+
+    Args:
+        request (HttpRequest): L'objet de requête.
+
+    Returns:
+        FileResponse: Le fichier ZIP en téléchargement (attachment).
     """
 
     # 1. Préparation du fichier en mémoire (pas d'écriture sur le disque du serveur)
@@ -654,129 +596,26 @@ def download_backup(request):
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename=filename)
 
-# def run_command(request, link_id):
-#     link = get_object_or_404(Link, id=link_id)
-#     command = link.url.strip()
-#
-#     print(f"--- TENTATIVE D'EXÉCUTION : {command} ---")
-#
-#     if not command:
-#         return HttpResponse(status=400)
-#
-#     # 1. On cherche le terminal disponible
-#     # On préfère gnome-terminal, sinon on prend xterm, sinon on essaie 'konsole' (KDE)
-#     terminal_path = shutil.which('gnome-terminal') or shutil.which('xterm') or shutil.which('konsole')
-#
-#     if not terminal_path:
-#         print("ERREUR: Aucun terminal compatible trouvé.")
-#         return HttpResponse(status=500)
-#
-#     try:
-#         # La commande bash à exécuter à l'intérieur
-#         bash_cmd = f"{command}; echo ''; read -p 'Appuyez sur Entrée pour fermer...' variable"
-#
-#         # 2. On adapte la syntaxe selon le terminal trouvé
-#         if 'gnome-terminal' in terminal_path:
-#             # Syntaxe Gnome : gnome-terminal -- bash -c "..."
-#             full_cmd = [terminal_path, '--', 'bash', '-c', bash_cmd]
-#
-#         elif 'xterm' in terminal_path:
-#             # Syntaxe Xterm : xterm -fa 'Monospace' -fs 10 -geometry 100x30 -e bash -c "..."
-#             # J'ajoute -fa et -geometry pour que xterm soit moins moche et plus grand
-#             full_cmd = [terminal_path, '-fa', 'Monospace', '-fs', '11', '-geometry', '130x40', '-e', 'bash', '-c',
-#                         bash_cmd]
-#
-#         elif 'konsole' in terminal_path:
-#             # Syntaxe Konsole (si jamais)
-#             full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
-#
-#         else:
-#             # Par défaut on tente le -e standard
-#             full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
-#
-#         # 3. Exécution
-#         subprocess.Popen(full_cmd)
-#         print(f"SUCCÈS: Terminal lancé ({terminal_path})")
-#         return HttpResponse(status=204)
-#
-#     except Exception as e:
-#         print(f"ERREUR CRITIQUE: {e}")
-#         return HttpResponse(status=500)
-
-
-# def run_command(request, link_id):
-#     """
-#     Cette fonction est utilisée pour exécuter des commandes shell à
-#     partir d'une interface web. Elle vérifie la disponibilité d'un
-#     terminal sur le serveur, prépare et exécute une commande bash
-#     dans ce terminal, puis retourne une réponse HTTP appropriée
-#     au client.
-#     """
-#     # Récupère l'objet Link correspondant à l'id fourni ou retourne une erreur 404 si non trouvé
-#     link = get_object_or_404(Link, id=link_id)
-#
-#     # Supprime les espaces en début et fin de la commande stockée dans le champ 'url' du modèle Link
-#     command = link.url.strip()
-#
-#     # Imprime un message indiquant la tentative d'exécution de la commande
-#     print(f"--- TENTATIVE D'EXÉCUTION : {command} ---")
-#
-#     # Si la commande est vide, retourne une erreur 400 (Bad Request)
-#     if not command:
-#         return HttpResponse(status=400)
-#
-#     # Recherche le chemin vers un terminal compatible
-#     # Préférence donnée à 'gnome-terminal', sinon utilise 'xterm' ou 'konsole'
-#     terminal_path = shutil.which('gnome-terminal') or shutil.which('xterm') or shutil.which('konsole')
-#
-#     # Si aucun terminal n'est trouvé, imprime un message d'erreur et retourne une erreur 500 (Internal Server Error)
-#     if not terminal_path:
-#         print("ERREUR: Aucun terminal compatible trouvé.")
-#         return HttpResponse(status=500)
-#
-#     try:
-#         # Construit la commande bash à exécuter
-#         # La commande fournie est suivie d'un echo vide et une attente de l'utilisateur pour fermer le terminal
-#         bash_cmd = f"{command}; echo ''; read -p 'Appuyez sur Entrée pour fermer...' variable"
-#
-#         # Construit la commande complète en fonction du terminal trouvé
-#         if 'gnome-terminal' in terminal_path:
-#             # Syntaxe pour gnome-terminal
-#             full_cmd = [terminal_path, '--', 'bash', '-c', bash_cmd]
-#
-#         elif 'xterm' in terminal_path:
-#             # Syntaxe pour xterm avec quelques options pour améliorer l'apparence
-#             full_cmd = [terminal_path, '-fa', 'Monospace', '-fs', '11', '-geometry', '130x40', '-e', 'bash', '-c',
-#                         bash_cmd]
-#
-#         elif 'konsole' in terminal_path:
-#             # Syntaxe pour konsole
-#             full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
-#
-#         else:
-#             # Syntaxe par défaut si le terminal n'est pas reconnu
-#             full_cmd = [terminal_path, '-e', 'bash', '-c', bash_cmd]
-#
-#         # Exécute la commande dans un nouveau processus
-#         subprocess.Popen(full_cmd)
-#
-#         # Imprime un message de succès avec le chemin du terminal utilisé
-#         print(f"SUCCÈS: Terminal lancé ({terminal_path})")
-#
-#         # Retourne une réponse HTTP 204 (No Content), indiquant que la requête a réussi sans contenu à retourner
-#         return HttpResponse(status=204)
-#
-#     except Exception as e:
-#         # En cas d'erreur inattendue, imprime le message d'erreur et retourne une erreur 500
-#         print(f"ERREUR CRITIQUE: {e}")
-#         return HttpResponse(status=500)
-
-
-import subprocess
-import shutil
-
 
 def run_command(request, link_id):
+    """Exécute une commande shell dans une nouvelle fenêtre de terminal.
+
+    Récupère une commande depuis un objet Link et la lance dans un terminal
+    graphique (gnome-terminal, xterm, etc.). Un script wrapper est utilisé
+    pour afficher un message de succès ou d'erreur et pour garder la
+    fenêtre ouverte jusqu'à ce que l'utilisateur appuie sur Entrée.
+
+    Args:
+        request (HttpRequest): L'objet de requête Django.
+        link_id (int): L'ID du lien contenant la commande à exécuter.
+
+    Returns:
+        HttpResponse:
+            - 204 No Content: Si la commande est lancée avec succès.
+            - 400 Bad Request: Si la commande est vide.
+            - 500 Internal Server Error: Si aucun terminal n'est trouvé ou
+              si une autre exception se produit.
+    """
     link = get_object_or_404(Link, id=link_id)
     command = link.url.strip()
 

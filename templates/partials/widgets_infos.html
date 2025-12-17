@@ -1,6 +1,6 @@
 <div class="col-span-1 md:col-span-2 lg:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-6">
 
-    <div class="col-span-1 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-48 flex flex-col justify-between relative overflow-hidden">
+    <div class="col-span-1 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-56 flex flex-col justify-between relative overflow-hidden">
         <div class="flex justify-between items-start z-10">
             <div>
                 <h3 class="font-bold text-white text-xl">Météo</h3>
@@ -17,13 +17,13 @@
         <div class="absolute -left-10 -top-10 w-40 h-40 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
     </div>
 
-    <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex flex-col justify-center items-center">
+    <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-56 flex flex-col justify-center items-center">
         <h3 class="font-bold text-orange-400 w-full text-left mb-2">Heure Locale</h3>
-        <div id="clock-display" class="text-4xl font-mono text-blue-400 font-bold tracking-wider">--:--:--</div>
+        <div id="clock-display" class="text-3xl font-mono text-blue-400 font-bold">--:--:--</div>
         <div id="date-display" class="text-gray-400 text-lg mt-2 capitalize">Chargement...</div>
     </div>
 
-    <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-48 flex flex-col justify-center"
+    <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-56 flex flex-col justify-center"
          hx-get="{% url 'system_monitor' %}"
          hx-trigger="load, every 8s">
         <div class="text-center text-gray-500 text-xs animate-pulse">

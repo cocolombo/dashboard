@@ -81,7 +81,7 @@
                 <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white py-1 rounded text-sm">Créer le bouton</button>
             </form>
 
-            <div class="grid grid-cols-2 gap-2 overflow-y-auto p-1 max-h-64 custom-scrollbar w-full">
+            <div class="grid grid-cols-1 gap-2 overflow-y-auto p-1 max-h-64 custom-scrollbar w-full">
                 {% for link in widget.links.all %}
                     {% include "partials/command_item.html" %}
                 {% endfor %}

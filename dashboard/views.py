@@ -597,6 +597,7 @@ def download_backup(request):
     return FileResponse(buffer, as_attachment=True, filename=filename)
 
 
+@require_POST
 def run_command(request, link_id):
     """Exécute une commande shell dans une nouvelle fenêtre de terminal.
 
@@ -624,8 +625,8 @@ def run_command(request, link_id):
     if not command:
         return HttpResponse(status=400)
 
-    # 1. Détection du terminal (Gnome > Xterm > Konsole)
-    terminal_path = shutil.which('gnome-terminal') or shutil.which('xterm') or shutil.which('konsole')
+    # 1. Détection du terminal (Mate > Gnome > Xterm > Konsole)
+    terminal_path = shutil.which('mate-terminal') or shutil.which('gnome-terminal') or shutil.which('xterm') or shutil.which('konsole')
 
     if not terminal_path:
         print("ERREUR: Aucun terminal compatible trouvé.")
@@ -640,6 +641,8 @@ def run_command(request, link_id):
         # - Le 'read' final garantit que la fenêtre reste ouverte.
 
         script_bash = f"""
+        echo ">>> Exécution de : {command}"
+        echo ""
         {command}
         EXIT_CODE=$?
         echo ""
@@ -647,14 +650,19 @@ def run_command(request, link_id):
             echo -e "\\033[1;31m⚠️  ERREUR CRITIQUE : La commande a échoué (Code $EXIT_CODE)\\033[0m"
             echo -e "\\033[1;31m    Vérifiez la syntaxe ou les logs ci-dessus.\\033[0m"
         else
-            echo -e "\\033[1;32m✅  SUCCÈS : Commande terminée sans erreur.\\033[0m"
+            echo -e "\\033[1;32m✅  SUCCÈS : Commande terminée.\\033[0m"
         fi
         echo ""
-        read -p "Appuyez sur Entrée pour fermer ce terminal..."
+        echo "---------------------------------------------------"
+        echo "Terminal interactif activé."
+        echo "Tapez vos prochaines commandes ci-dessous (ex: ollama run ...)"
+        echo "Tapez 'exit' pour fermer la fenêtre."
+        echo "---------------------------------------------------"
+        exec bash
         """
 
         # 3. Adaptation selon le terminal (Syntaxe d'appel)
-        if 'gnome-terminal' in terminal_path:
+        if 'mate-terminal' in terminal_path or 'gnome-terminal' in terminal_path:
             # Note : On passe le script comme un seul argument à bash -c
             full_cmd = [terminal_path, '--', 'bash', '-c', script_bash]
 

@@ -152,7 +152,10 @@
         if (!clockEl) return;
 
         const now = new Date();
-        clockEl.textContent = now.toLocaleTimeString('fr-CA', { hour12: false });
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        // const seconds = String(now.getSeconds()).padStart(2, '0'); // Secondes supprimées
+        clockEl.textContent = `${hours}:${minutes}`; // Affichage HH:MM
         dateEl.textContent = now.toLocaleDateString('fr-CA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
     if(document.getElementById('clock-display')) {

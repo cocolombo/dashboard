@@ -6,7 +6,6 @@ urlpatterns = [
     # VUES PRINCIPALES
     # =================================
     path('', views.index, name='index_root'),
-    path('page/<slug:slug>/', views.index, name='index'),
 
     # =================================
     # ACTIONS SUR LES PAGES
@@ -14,6 +13,7 @@ urlpatterns = [
     path('page/create/', views.create_page, name='create_page'),
     path('page/rename/<int:page_id>/', views.rename_page, name='rename_page'),
     path('page/delete/<int:page_id>/', views.delete_page, name='delete_page'),
+    path('page/<slug:slug>/', views.index, name='index'), # Doit être après les autres URLs de page
 
     # =================================
     # ACTIONS SUR LES WIDGETS
@@ -37,7 +37,7 @@ urlpatterns = [
     # =================================
     path('api/update-page-order/', views.update_page_order, name='update_page_order'),
     path('api/update-widget-order/', views.update_widget_order, name='update_widget_order'),
-    path('api/update-link-order/', views.update_link_order, name='update_order'),
+    path('api/update-order/', views.update_link_order, name='update_order'), # Correction ici
     path('api/move-link/<int:link_id>/', views.move_link_to_page, name='move_link'),
     path('api/save-note/<int:widget_id>/', views.save_note_content, name='save_note'),
 

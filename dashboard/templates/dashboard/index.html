@@ -93,10 +93,7 @@
 
             <!-- Boucle pour afficher les widgets créés par l'utilisateur -->
             {% for widget in active_page.widgets.all %}
-                {% if active_page.slug == 'infos' and widget.title == "Scripts" %}
-                    {% else %}
-                    {% include "partials/widget.html" %}
-                {% endif %}
+                {% include "partials/widget.html" %}
             {% endfor %}
 
         </div>
@@ -130,15 +127,6 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
     </svg>
 </button>
-
-<!-- Bouton pour télécharger la sauvegarde -->
-<a href="{% url 'download_backup' %}"
-   class="fixed bottom-20 right-6 z-50 bg-gray-800 hover:bg-green-600 text-gray-400 hover:text-white p-3 rounded-full shadow-2xl border border-gray-600 transition-all duration-300 opacity-50 hover:opacity-100"
-   title="Télécharger une sauvegarde (.zip)">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-    </svg>
-</a>
 
 <!-- =================================== -->
 <!-- SCRIPTS JAVASCRIPT                  -->

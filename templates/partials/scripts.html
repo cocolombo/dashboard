@@ -79,7 +79,7 @@
             onEnd: function (evt) {
                 var targetList = evt.to;
                 var widgetId = targetList.getAttribute('data-widget-id');
-                var listItems = targetList.querySelectorAll('li');
+                var listItems = targetList.querySelectorAll('[data-id]');
                 var linkIds = Array.from(listItems).map(li => li.getAttribute('data-id'));
 
                 var formData = new FormData();
@@ -149,15 +149,37 @@
     function updateClock() {
         const clockEl = document.getElementById('clock-display');
         const dateEl = document.getElementById('date-display');
+
+        // Horloges additionnelles
+        const clockParis = document.getElementById('clock-paris');
+        const clockSF = document.getElementById('clock-sf');
+        const clockPekin = document.getElementById('clock-pekin');
+
         if (!clockEl) return;
 
         const now = new Date();
+
+        // Heure locale (Montréal)
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
-        // const seconds = String(now.getSeconds()).padStart(2, '0'); // Secondes supprimées
-        clockEl.textContent = `${hours}:${minutes}`; // Affichage HH:MM
+        clockEl.textContent = `${hours}:${minutes}`;
         dateEl.textContent = now.toLocaleDateString('fr-CA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Fonction helper pour formater l'heure selon le fuseau
+        const getForeignTime = (timeZone) => {
+            return new Intl.DateTimeFormat('fr-CA', {
+                timeZone: timeZone,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).format(now);
+        };
+
+        if(clockParis) clockParis.textContent = getForeignTime('Europe/Paris');
+        if(clockSF) clockSF.textContent = getForeignTime('America/Los_Angeles');
+        if(clockPekin) clockPekin.textContent = getForeignTime('Asia/Shanghai');
     }
+
     if(document.getElementById('clock-display')) {
         setInterval(updateClock, 1000);
         updateClock();

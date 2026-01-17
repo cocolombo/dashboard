@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="widget-content flex-1 flex flex-col relative">
+    <div class="widget-content flex-1 flex flex-col relative overflow-hidden">
 
         {% if widget.widget_type == 'list' or not widget.widget_type %}
 
@@ -41,7 +41,7 @@
                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-1 rounded text-sm">Ajouter</button>
             </form>
 
-            <ul class="sortable-list space-y-0 flex-1 min-h-[20px]" data-widget-id="{{ widget.id }}">
+            <ul class="sortable-list space-y-0 flex-1 min-h-[20px] overflow-y-auto custom-scrollbar" data-widget-id="{{ widget.id }}">
                 {% for link in widget.links.all %}
                     {% include "partials/link_item.html" %}
                 {% endfor %}
@@ -51,14 +51,14 @@
 
             <textarea
                 name="content"
-                class="w-full h-64 bg-gray-900 text-gray-300 p-3 rounded border border-gray-700 focus:border-blue-500 focus:outline-none resize-none text-sm font-mono leading-relaxed"
+                class="w-full h-full bg-gray-900 text-gray-300 p-3 rounded border border-gray-700 focus:border-blue-500 focus:outline-none resize-none text-sm font-mono leading-relaxed"
                 placeholder="Écrivez vos notes ici..."
                 hx-post="{% url 'save_note' widget.id %}"
                 hx-trigger="keyup changed delay:500ms, blur"
                 hx-swap="none"
             >{{ widget.content|default_if_none:"" }}</textarea>
 
-            <div class="text-right mt-1 h-4">
+            <div class="text-right mt-1 h-4 absolute bottom-2 right-4 pointer-events-none">
                 <span id="save-status-{{ widget.id }}" class="text-xs text-gray-600 italic transition-opacity duration-500 opacity-0">Sauvegardé</span>
             </div>
 
@@ -81,7 +81,7 @@
                 <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white py-1 rounded text-sm">Créer le bouton</button>
             </form>
 
-            <div class="grid grid-cols-1 gap-2 overflow-y-auto p-1 max-h-64 custom-scrollbar w-full">
+            <div class="grid grid-cols-1 gap-2 overflow-y-auto p-1 custom-scrollbar w-full h-full">
                 {% for link in widget.links.all %}
                     {% include "partials/command_item.html" %}
                 {% endfor %}

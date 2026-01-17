@@ -17,10 +17,27 @@
         <div class="absolute -left-10 -top-10 w-40 h-40 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
     </div>
 
-    <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-56 flex flex-col justify-center items-center">
-        <h3 class="font-bold text-orange-400 w-full text-left mb-2">Heure Locale</h3>
-        <div id="clock-display" class="text-3xl font-mono text-blue-400 font-bold">--:--:--</div>
-        <div id="date-display" class="text-gray-400 text-lg mt-2 capitalize">Chargement...</div>
+    <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-56 flex flex-col">
+        <div class="flex flex-col items-center justify-center flex-1 mb-2">
+            <h3 class="font-bold text-orange-400 w-full text-center mb-1 text-sm uppercase tracking-wide">Montréal</h3>
+            <div id="clock-display" class="text-4xl font-mono text-blue-400 font-bold leading-none">--:--</div>
+            <div id="date-display" class="text-gray-500 text-xs mt-1 capitalize">Chargement...</div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 border-t border-gray-700 pt-2">
+            <div class="text-center">
+                <div class="text-gray-300 text-xs uppercase font-bold">Paris</div>
+                <div id="clock-paris" class="text-white font-mono text-sm font-bold">--:--</div>
+            </div>
+            <div class="text-center border-l border-gray-700">
+                <div class="text-gray-300 text-xs uppercase font-bold">SF</div>
+                <div id="clock-sf" class="text-white font-mono text-sm font-bold">--:--</div>
+            </div>
+            <div class="text-center border-l border-gray-700">
+                <div class="text-gray-300 text-xs uppercase font-bold">Pékin</div>
+                <div id="clock-pekin" class="text-white font-mono text-sm font-bold">--:--</div>
+            </div>
+        </div>
     </div>
 
     <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-56 flex flex-col justify-center"
@@ -79,13 +96,5 @@
         </div>
         <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-xs flex-1 content-start"></div>
     </div>
-
-    {% for widget in active_page.widgets.all %}
-        {% if widget.title == "Scripts" %}
-             <div class="col-span-1 h-64 overflow-hidden relative group">
-                {% include "partials/widget.html" %}
-            </div>
-        {% endif %}
-    {% endfor %}
 
 </div>

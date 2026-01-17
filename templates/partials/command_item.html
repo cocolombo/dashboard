@@ -1,4 +1,4 @@
-<div class="relative group/cmd w-full" id="link-{{ link.id }}">
+<div class="relative group/cmd w-full" id="link-{{ link.id }}" data-id="{{ link.id }}">
     
     <form action="{% url 'run_command' link.id %}" method="POST" onsubmit="event.preventDefault(); this.submit();">
         {% csrf_token %}
@@ -9,7 +9,7 @@
                 {{ link.title }}
             </span>
 
-            <span class="text-[9px] text-gray-300 mt-1 font-mono w-full text-center truncate px-1">
+            <span class="text-[9px] text-gray-200 mt-1 font-mono w-full text-center truncate px-1">
                 >_ {{ link.url }}
             </span>
         </button>

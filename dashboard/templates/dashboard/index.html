@@ -62,12 +62,6 @@
     <style>
         #context-menu { display: none; position: absolute; z-index: 50; }
         .sortable-ghost { opacity: 0.4; background-color: #4B5563; }
-
-        /* --- MODE ZEN --- */
-        /* Ces classes masquent les éléments d'interface quand le body a la classe .zen-mode */
-        body.zen-mode #main-nav { display: none !important; }
-        body.zen-mode #search-container { display: none !important; }
-        body.zen-mode .main-content { padding-top: 2rem !important; }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-200 font-sans min-h-screen select-none"
@@ -113,20 +107,6 @@
 <!-- MODALES (FENÊTRES POP-UP)           -->
 <!-- =================================== -->
 {% include "partials/modals.html" %}
-
-<!-- =================================== -->
-<!-- BOUTONS FLOTTANTS                   -->
-<!-- =================================== -->
-
-<!-- Bouton pour activer/désactiver le "Mode Zen" -->
-<button id="zen-toggle-btn"
-        onclick="toggleZenMode()"
-        class="fixed bottom-6 right-6 z-50 bg-gray-800 hover:bg-blue-600 text-gray-400 hover:text-white p-3 rounded-full shadow-2xl border border-gray-600 transition-all duration-300 opacity-50 hover:opacity-100"
-        title="Mode Zen (Masquer l'interface)">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-    </svg>
-</button>
 
 <!-- =================================== -->
 <!-- SCRIPTS JAVASCRIPT                  -->

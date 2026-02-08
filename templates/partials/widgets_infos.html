@@ -1,5 +1,6 @@
 <div class="col-span-1 md:col-span-2 lg:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-6">
 
+    <!-- 1. Météo -->
     <div class="col-span-1 bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 h-56 flex flex-col justify-between relative overflow-hidden">
         <div class="flex justify-between items-start z-10">
             <div>
@@ -17,6 +18,7 @@
         <div class="absolute -left-10 -top-10 w-40 h-40 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
     </div>
 
+    <!-- 2. Horloges -->
     <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-56 flex flex-col">
         <div class="flex flex-col items-center justify-center flex-1 mb-2">
             <h3 class="font-bold text-orange-400 w-full text-center mb-1 text-sm uppercase tracking-wide">Montréal</h3>
@@ -40,6 +42,7 @@
         </div>
     </div>
 
+    <!-- 3. Monitoring Système -->
     <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-56 flex flex-col justify-center"
          hx-get="{% url 'system_monitor' %}"
          hx-trigger="load, every 8s">
@@ -48,6 +51,7 @@
         </div>
     </div>
 
+    <!-- 4. Marchés -->
     <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-64 overflow-hidden">
         <h3 class="font-bold text-orange-400 mb-2 text-lg">Marchés</h3>
         <div class="tradingview-widget-container h-full">
@@ -81,6 +85,7 @@
         </div>
     </div>
 
+    <!-- 5. Calendrier -->
     <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-64 flex flex-col">
          <div class="flex justify-between items-center mb-2 border-b border-gray-700 pb-1">
             <h3 id="cal-month-year" class="font-bold text-orange-400 capitalize text-sm">--</h3>
@@ -97,5 +102,73 @@
         </div>
         <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-xs flex-1 content-start"></div>
     </div>
+
+    <!-- 6. Calculatrice (NOUVEAU) -->
+    <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-64 flex flex-col">
+        <h3 class="font-bold text-orange-400 mb-2 text-lg">Calculatrice</h3>
+        <!-- Écran -->
+        <input type="text" id="calc-display" readonly
+               class="w-full bg-gray-900 text-right text-xl text-white p-2 rounded mb-2 border border-gray-700 focus:outline-none font-mono tracking-widest"
+               placeholder="0">
+
+        <!-- Touches -->
+        <div class="grid grid-cols-4 gap-2 flex-1">
+            <!-- Ligne 1 -->
+            <button onclick="calcInput('C')" class="bg-red-900/40 hover:bg-red-800 text-red-200 rounded font-bold text-xs transition-colors">C</button>
+            <button onclick="calcInput('/')" class="bg-gray-700 hover:bg-gray-600 rounded text-blue-400 font-bold transition-colors">÷</button>
+            <button onclick="calcInput('*')" class="bg-gray-700 hover:bg-gray-600 rounded text-blue-400 font-bold transition-colors">×</button>
+            <button onclick="calcInput('DEL')" class="bg-gray-700 hover:bg-gray-600 rounded text-orange-400 font-bold transition-colors">⌫</button>
+
+            <!-- Ligne 2 -->
+            <button onclick="calcInput('7')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">7</button>
+            <button onclick="calcInput('8')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">8</button>
+            <button onclick="calcInput('9')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">9</button>
+            <button onclick="calcInput('-')" class="bg-gray-700 hover:bg-gray-600 rounded text-blue-400 font-bold transition-colors">-</button>
+
+            <!-- Ligne 3 -->
+            <button onclick="calcInput('4')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">4</button>
+            <button onclick="calcInput('5')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">5</button>
+            <button onclick="calcInput('6')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">6</button>
+            <button onclick="calcInput('+')" class="bg-gray-700 hover:bg-gray-600 rounded text-blue-400 font-bold transition-colors">+</button>
+
+            <!-- Ligne 4 -->
+            <button onclick="calcInput('1')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">1</button>
+            <button onclick="calcInput('2')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">2</button>
+            <button onclick="calcInput('3')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">3</button>
+            <button onclick="calcResult()" class="row-span-2 bg-blue-600 hover:bg-blue-500 rounded font-bold text-white transition-colors">=</button>
+
+            <!-- Ligne 5 -->
+            <button onclick="calcInput('0')" class="col-span-2 bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors">0</button>
+            <button onclick="calcInput('.')" class="bg-gray-700 hover:bg-gray-600 rounded text-sm font-bold transition-colors">.</button>
+        </div>
+    </div>
+
+    <script>
+        // Logique simple de la calculatrice
+        function calcInput(val) {
+            const display = document.getElementById('calc-display');
+            if (val === 'C') {
+                display.value = '';
+            } else if (val === 'DEL') {
+                display.value = display.value.slice(0, -1);
+            } else {
+                display.value += val;
+            }
+        }
+
+        function calcResult() {
+            const display = document.getElementById('calc-display');
+            try {
+                // Évaluation sécurisée pour un usage perso
+                if(display.value) {
+                    display.value = eval(display.value);
+                }
+            } catch {
+                const old = display.value;
+                display.value = 'Err';
+                setTimeout(() => display.value = old, 1000);
+            }
+        }
+    </script>
 
 </div>

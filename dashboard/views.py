@@ -8,6 +8,8 @@ import psutil
 import subprocess
 import os
 import shutil
+import socket
+import requests
 
 import zipfile
 import io
@@ -685,3 +687,29 @@ def run_command(request, link_id):
     except Exception as e:
         print(f"ERREUR CRITIQUE PYTHON: {e}")
         return HttpResponse(status=500)
+
+def get_network_info(request):
+    """Récupère les informations réseau (IP locale et publique).
+
+    Returns:
+        HttpResponse: Fragment HTML avec les IPs.
+    """
+    # 1. IP Locale
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+    except:
+        local_ip = "127.0.0.1"
+
+    # 2. IP Publique (via API externe rapide)
+    try:
+        public_ip = requests.get('https://api.ipify.org', timeout=2).text
+    except:
+        public_ip = "Indisponible"
+
+    return render(request, 'partials/network_info.html', {
+        'local_ip': local_ip,
+        'public_ip': public_ip
+    })

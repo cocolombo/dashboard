@@ -103,7 +103,7 @@
         <div id="cal-days" class="grid grid-cols-7 gap-1 text-center text-xs flex-1 content-start"></div>
     </div>
 
-    <!-- 6. Calculatrice (NOUVEAU) -->
+    <!-- 6. Calculatrice -->
     <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-64 flex flex-col">
         <h3 class="font-bold text-orange-400 mb-2 text-lg">Calculatrice</h3>
         <!-- Écran -->
@@ -143,8 +143,35 @@
         </div>
     </div>
 
+    <!-- 7. Minuteur Pomodoro (NOUVEAU) -->
+    <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-64 flex flex-col items-center justify-center relative overflow-hidden">
+        <h3 class="font-bold text-orange-400 mb-4 text-lg absolute top-4 left-4">Pomodoro</h3>
+
+        <!-- Cercle de progression (SVG) -->
+        <div class="relative w-32 h-32 flex items-center justify-center">
+            <svg class="w-full h-full transform -rotate-90">
+                <circle cx="64" cy="64" r="60" stroke="currentColor" stroke-width="6" fill="transparent" class="text-gray-700" />
+                <circle id="pomo-progress" cx="64" cy="64" r="60" stroke="currentColor" stroke-width="6" fill="transparent" class="text-blue-500 transition-all duration-1000 ease-linear" stroke-dasharray="377" stroke-dashoffset="0" />
+            </svg>
+            <div id="pomo-timer" class="absolute text-3xl font-mono font-bold text-white">25:00</div>
+        </div>
+
+        <!-- Contrôles -->
+        <div class="flex gap-4 mt-4 z-10">
+            <button onclick="startPomo()" id="btn-start" class="bg-green-600 hover:bg-green-500 text-white px-4 py-1 rounded text-sm font-bold transition-colors">Start</button>
+            <button onclick="resetPomo()" class="bg-gray-600 hover:bg-gray-500 text-white px-4 py-1 rounded text-sm font-bold transition-colors">Reset</button>
+        </div>
+
+        <!-- Modes -->
+        <div class="flex gap-2 mt-2 text-xs text-gray-400">
+            <span onclick="setPomo(25)" class="cursor-pointer hover:text-white border-b border-transparent hover:border-white">Travail</span>
+            <span>|</span>
+            <span onclick="setPomo(5)" class="cursor-pointer hover:text-white border-b border-transparent hover:border-white">Pause</span>
+        </div>
+    </div>
+
     <script>
-        // Logique simple de la calculatrice
+        // --- CALCULATRICE ---
         function calcInput(val) {
             const display = document.getElementById('calc-display');
             if (val === 'C') {
@@ -159,7 +186,6 @@
         function calcResult() {
             const display = document.getElementById('calc-display');
             try {
-                // Évaluation sécurisée pour un usage perso
                 if(display.value) {
                     display.value = eval(display.value);
                 }
@@ -168,6 +194,61 @@
                 display.value = 'Err';
                 setTimeout(() => display.value = old, 1000);
             }
+        }
+
+        // --- POMODORO ---
+        let pomoInterval;
+        let pomoTime = 25 * 60;
+        let pomoTotalTime = 25 * 60;
+        let isRunning = false;
+
+        function updateDisplay() {
+            const minutes = Math.floor(pomoTime / 60);
+            const seconds = pomoTime % 60;
+            document.getElementById('pomo-timer').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // Mise à jour du cercle SVG
+            const circle = document.getElementById('pomo-progress');
+            const offset = 377 - (377 * pomoTime / pomoTotalTime);
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function startPomo() {
+            if (isRunning) {
+                clearInterval(pomoInterval);
+                document.getElementById('btn-start').textContent = "Start";
+                document.getElementById('btn-start').classList.replace('bg-yellow-600', 'bg-green-600');
+                isRunning = false;
+            } else {
+                pomoInterval = setInterval(() => {
+                    if (pomoTime > 0) {
+                        pomoTime--;
+                        updateDisplay();
+                    } else {
+                        clearInterval(pomoInterval);
+                        alert("Temps écoulé !");
+                        resetPomo();
+                    }
+                }, 1000);
+                document.getElementById('btn-start').textContent = "Pause";
+                document.getElementById('btn-start').classList.replace('bg-green-600', 'bg-yellow-600');
+                isRunning = true;
+            }
+        }
+
+        function resetPomo() {
+            clearInterval(pomoInterval);
+            pomoTime = pomoTotalTime;
+            isRunning = false;
+            document.getElementById('btn-start').textContent = "Start";
+            document.getElementById('btn-start').classList.replace('bg-yellow-600', 'bg-green-600');
+            updateDisplay();
+        }
+
+        function setPomo(minutes) {
+            pomoTotalTime = minutes * 60;
+            resetPomo();
         }
     </script>
 

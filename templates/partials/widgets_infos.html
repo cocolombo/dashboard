@@ -204,6 +204,29 @@
         let pomoTotalTime = 25 * 60;
         let isRunning = false;
 
+        // Fonction pour générer un BIP sans fichier externe
+        function playAlarm() {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.type = 'sine'; // Son pur
+            osc.frequency.setValueAtTime(440, ctx.currentTime); // La 440Hz
+
+            // Volume : fort au début, puis s'estompe
+            gain.gain.setValueAtTime(0.5, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
+
+            osc.start();
+            osc.stop(ctx.currentTime + 1.5); // Durée 1.5 secondes
+        }
+
         function updateDisplay() {
             const minutes = Math.floor(pomoTime / 60);
             const seconds = pomoTime % 60;
@@ -229,8 +252,12 @@
                         updateDisplay();
                     } else {
                         clearInterval(pomoInterval);
-                        alert("Temps écoulé !");
-                        resetPomo();
+                        playAlarm(); // JOUER LE SON
+                        // Petit délai pour laisser le son démarrer avant l'alerte bloquante
+                        setTimeout(() => {
+                            alert("Temps écoulé !");
+                            resetPomo();
+                        }, 500);
                     }
                 }, 1000);
                 document.getElementById('btn-start').textContent = "Pause";

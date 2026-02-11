@@ -153,7 +153,7 @@
                 <circle cx="64" cy="64" r="60" stroke="currentColor" stroke-width="6" fill="transparent" class="text-gray-700" />
                 <circle id="pomo-progress" cx="64" cy="64" r="60" stroke="currentColor" stroke-width="6" fill="transparent" class="text-blue-500 transition-all duration-1000 ease-linear" stroke-dasharray="377" stroke-dashoffset="0" />
             </svg>
-            <div id="pomo-timer" class="absolute text-2xl font-mono font-bold text-white">25:00</div>
+            <div id="pomo-timer" class="absolute inset-0 flex items-center justify-center text-xl font-mono font-bold text-white leading-none pt-1">25:00</div>
         </div>
 
         <!-- Contrôles -->
@@ -172,7 +172,7 @@
         </div>
     </div>
 
-    <!-- 8. Infos Réseau (NOUVEAU) -->
+    <!-- 8. Infos Réseau -->
     <div class="col-span-1 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 h-64 flex flex-col"
          hx-get="{% url 'get_network_info' %}"
          hx-trigger="load">
